@@ -1,7 +1,11 @@
 import { useForm, Controller } from "react-hook-form";
-import { Button, Input } from "@nextui-org/react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Input } from "../theme/components";
+import { useState } from "react";
+import { calculateTotalProfit } from "../utils/calculate-total-profit";
+import { convertToNumbers } from "../utils/convert-to-numbers";
+import { formatPrice } from "../utils/format-price";
 
 type FormInputs = {
 	investedAmount: string;
@@ -15,14 +19,14 @@ type FormInputs = {
 };
 
 const defaultValues: FormInputs = {
-	investedAmount: "",
 	buyPrice: "",
+	investedAmount: "",
 	target1: "",
 	target2: "",
 	target3: "",
-	sellingPercentageAtTarget1: "",
-	sellingPercentageAtTarget2: "",
-	sellingPercentageAtTarget3: "",
+	sellingPercentageAtTarget1: "40",
+	sellingPercentageAtTarget2: "30",
+	sellingPercentageAtTarget3: "30",
 };
 
 const schema = yup.object().shape({
@@ -37,12 +41,14 @@ const schema = yup.object().shape({
 });
 
 export const CalculatorForm = () => {
+	const [totalProfitInUSD, setTotalProfitInUSD] = useState<number>(0);
+	const [totalProfitInAED, setTotalProfitInAED] = useState<number>(0);
+	const [totalProfitPercentage, setTotalProfitPercentage] = useState<number>(0);
+
 	const {
 		control,
-		register,
 		handleSubmit,
 		resetField,
-		watch,
 		formState: { errors },
 	} = useForm<FormInputs>({
 		reValidateMode: "onChange",
@@ -50,119 +56,207 @@ export const CalculatorForm = () => {
 		defaultValues: { ...defaultValues },
 	});
 
-	console.log(watch("investedAmount"));
-
 	const onSubmit = (data: FormInputs) => {
-		console.log(data);
+		try {
+			const numericFormInputs = convertToNumbers<FormInputs>(data);
+
+			const profit = calculateTotalProfit(
+				numericFormInputs.investedAmount,
+				numericFormInputs.buyPrice,
+				numericFormInputs.target1,
+				numericFormInputs.target2,
+				numericFormInputs.target3,
+				numericFormInputs.sellingPercentageAtTarget1,
+				numericFormInputs.sellingPercentageAtTarget2,
+				numericFormInputs.sellingPercentageAtTarget3
+			);
+
+			setTotalProfitInUSD(profit);
+			setTotalProfitInAED(profit * 3.67);
+			setTotalProfitPercentage((profit / numericFormInputs.investedAmount) * 100);
+		} catch (error) {
+			console.error(error);
+			alert(error);
+		}
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-			{/* Invested Amount Input */}
-			<Controller
-				name="investedAmount"
-				control={control}
-				render={({ field: { onChange, onBlur, value } }) => (
-					<Input
-						onChange={onChange}
-						onBlur={onBlur}
-						value={value}
-						startContent={"$"}
-						label="Invested Amount"
-						labelPlacement="outside"
-						size="lg"
-						type="number"
-						className="w-full"
-						color="primary"
-						variant="bordered"
-						onClear={() => resetField("investedAmount")}
-						isInvalid={!!errors.investedAmount}
-						errorMessage={errors.investedAmount?.message}
-						isClearable
+		<div className="grid grid-cols-1 gap-9 py-unit-2xl">
+			<h1 className="text-4xl text-center font-bold">Total Profit Calculator</h1>
+
+			<div className="grid grid-cols-2 gap-1 text-lg">
+				<div className="flex gap-2 items-center">
+					<p className="font-bold">Total Profit:</p>
+					<p>
+						{formatPrice(totalProfitInUSD, "USD")} ({formatPrice(totalProfitPercentage)}%)
+					</p>
+				</div>
+
+				<div className="flex gap-2 items-center">
+					<p className="font-bold">Total Profit:</p>
+					<p>{formatPrice(totalProfitInAED, "AED")}</p>
+				</div>
+			</div>
+
+			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col mt-8" noValidate>
+				<div className="grid grid-cols-2 gap-x-16 gap-y-8">
+					{/* Invested Amount Input */}
+					<Controller
+						name="investedAmount"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"$"}
+								label="Invested Amount"
+								type="number"
+								onClear={() => resetField("investedAmount")}
+								errorMessage={errors.investedAmount?.message}
+								isClearable
+							/>
+						)}
 					/>
-				)}
-			/>
 
-			{/* Buy Price Input */}
-			<Input
-				{...register("buyPrice")}
-				isClearable
-				label="$ Buy Price"
-				type="number"
-				className="w-full"
-				color="primary"
-				errorMessage={errors.buyPrice?.message}
-			/>
+					{/* Buy Price Input */}
+					<Controller
+						name="buyPrice"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"$"}
+								label="Buy Price"
+								type="number"
+								onClear={() => resetField("buyPrice")}
+								errorMessage={errors.buyPrice?.message}
+								isClearable
+							/>
+						)}
+					/>
 
-			{/* Target 1 Input */}
-			<Input
-				{...register("target1")}
-				isClearable
-				label="$ Target 1"
-				type="number"
-				className="w-full"
-				color="primary"
-				errorMessage={errors.target1?.message}
-			/>
+					{/* Target 1 Input */}
+					<Controller
+						name="target1"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"$"}
+								label="Target 1"
+								type="number"
+								onClear={() => resetField("target1")}
+								errorMessage={errors.target1?.message}
+								isClearable
+							/>
+						)}
+					/>
 
-			{/* Target 2 Input */}
-			<Input
-				{...register("target2")}
-				isClearable
-				label="$ Target 2"
-				type="number"
-				className="w-full"
-				color="primary"
-				errorMessage={errors.target2?.message}
-			/>
+					{/* Selling Percentage at Target 1 Input */}
+					<Controller
+						name="sellingPercentageAtTarget1"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"%"}
+								label="Selling % at Target 1"
+								type="number"
+								onClear={() => resetField("sellingPercentageAtTarget1")}
+								errorMessage={errors.sellingPercentageAtTarget1?.message}
+								isClearable
+							/>
+						)}
+					/>
 
-			{/* Target 3 Input */}
-			<Input
-				{...register("target3")}
-				isClearable
-				label="$ Target 3"
-				type="number"
-				className="w-full"
-				color="primary"
-				errorMessage={errors.target3?.message}
-			/>
+					{/* Target 2 Input */}
+					<Controller
+						name="target2"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"$"}
+								label="Target 2"
+								type="number"
+								onClear={() => resetField("target2")}
+								errorMessage={errors.target2?.message}
+								isClearable
+							/>
+						)}
+					/>
 
-			{/* Selling Percentage at Target 1 Input */}
-			<Input
-				{...register("sellingPercentageAtTarget1")}
-				isClearable
-				label="% Selling at Target 1"
-				type="number"
-				className="w-full"
-				color="primary"
-				errorMessage={errors.sellingPercentageAtTarget1?.message}
-			/>
+					{/* Selling Percentage at Target 2 Input */}
+					<Controller
+						name="sellingPercentageAtTarget2"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"%"}
+								label="Selling % at Target 2"
+								type="number"
+								onClear={() => resetField("sellingPercentageAtTarget2")}
+								errorMessage={errors.sellingPercentageAtTarget2?.message}
+								isClearable
+							/>
+						)}
+					/>
 
-			{/* Selling Percentage at Target 2 Input */}
-			<Input
-				{...register("sellingPercentageAtTarget2")}
-				isClearable
-				label="% Selling at Target 2"
-				type="number"
-				className="w-full"
-				color="primary"
-				errorMessage={errors.sellingPercentageAtTarget2?.message}
-			/>
+					{/* Target 3 Input */}
+					<Controller
+						name="target3"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"$"}
+								label="Target 3"
+								type="number"
+								onClear={() => resetField("target3")}
+								errorMessage={errors.target3?.message}
+								isClearable
+							/>
+						)}
+					/>
 
-			{/* Selling Percentage at Target 3 Input */}
-			<Input
-				{...register("sellingPercentageAtTarget3")}
-				isClearable
-				label="% Selling at Target 3"
-				type="number"
-				className="w-full"
-				color="primary"
-				errorMessage={errors.sellingPercentageAtTarget3?.message}
-			/>
+					{/* Selling Percentage at Target 3 Input */}
+					<Controller
+						name="sellingPercentageAtTarget3"
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Input
+								onChange={onChange}
+								onBlur={onBlur}
+								value={value}
+								startContent={"%"}
+								label="Selling % at Target 3"
+								type="number"
+								onClear={() => resetField("sellingPercentageAtTarget3")}
+								errorMessage={errors.sellingPercentageAtTarget3?.message}
+								isClearable
+							/>
+						)}
+					/>
+				</div>
 
-			<Button type="submit" color="primary">
-				Submit
-			</Button>
-		</form>
+				<Button type="submit" color="primary" size="lg" className="mt-4">
+					Submit
+				</Button>
+			</form>
+		</div>
 	);
 };

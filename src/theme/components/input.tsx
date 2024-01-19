@@ -1,11 +1,11 @@
-import { extendVariants, Input as OInput } from '@nextui-org/react';
+import { extendVariants, Input as OInput } from "@nextui-org/react";
 
 export const Input = extendVariants(OInput, {
-  defaultVariants: {
-    size: 'md',
-    labelPlacement: 'inside',
-    variant: 'bordered',
-    color: 'secondary',
-    radius: 'sm',
-  },
+	defaultVariants: {
+		size: "lg",
+		labelPlacement: "outside",
+		variant: "bordered",
+		color: "primary",
+		radius: "md",
+	},
 });

@@ -1,15 +1,6 @@
 import { convertPercentageToNumber } from "./convert-percentage-to-number";
 
-export function calculateTotalProfit(
-	i: number,
-	c: number,
-	x: number,
-	y: number,
-	z: number,
-	_x: string = "40%",
-	_y: string = "30%",
-	_z: string = "30%"
-): number {
+export function calculateTotalProfit(i: number, c: number, x: number, y: number, z: number, _x: number, _y: number, _z: number): number {
 	// Determine the number of coins purchased
 	const numberOfCoins = i / c;
 
