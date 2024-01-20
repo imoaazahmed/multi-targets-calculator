@@ -41,6 +41,22 @@ const schema = yup.object().shape({
 	sellingPercentageAtTarget3: yup.string().required("Selling percentage at target 3 is required"),
 });
 
+const PriceSymbolIcon = () => {
+	return (
+		<div className="pointer-events-none flex items-center">
+			<span className="text-default-400 text-small">$</span>
+		</div>
+	);
+};
+
+const PercentageSymbolIcon = () => {
+	return (
+		<div className="pointer-events-none flex items-center">
+			<span className="text-default-400 text-small">%</span>
+		</div>
+	);
+};
+
 export const CalculatorForm = () => {
 	const [totalProfitInUSD, setTotalProfitInUSD] = useState<number>(0);
 	const [totalProfitPercentage, setTotalProfitPercentage] = useState<number>(0);
@@ -160,7 +176,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"$"}
+										startContent={<PriceSymbolIcon />}
 										label="Invested Amount"
 										type="number"
 										placeholder="0"
@@ -180,7 +196,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"$"}
+										startContent={<PriceSymbolIcon />}
 										label="Buy Price"
 										type="number"
 										placeholder="0"
@@ -205,7 +221,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"$"}
+										startContent={<PriceSymbolIcon />}
 										label="Amount"
 										type="number"
 										placeholder="0"
@@ -225,7 +241,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"%"}
+										startContent={<PercentageSymbolIcon />}
 										label={isMobile ? "Selling %" : "Selling % at this Target"}
 										type="number"
 										placeholder="0"
@@ -250,7 +266,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"$"}
+										startContent={<PriceSymbolIcon />}
 										label="Amount"
 										type="number"
 										placeholder="0"
@@ -270,7 +286,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"%"}
+										startContent={<PercentageSymbolIcon />}
 										label={isMobile ? "Selling %" : "Selling % at this Target"}
 										type="number"
 										placeholder="0"
@@ -295,7 +311,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"$"}
+										startContent={<PriceSymbolIcon />}
 										label="Amount"
 										type="number"
 										placeholder="0"
@@ -315,7 +331,7 @@ export const CalculatorForm = () => {
 										onChange={onChange}
 										onBlur={onBlur}
 										value={value}
-										startContent={"%"}
+										startContent={<PercentageSymbolIcon />}
 										label={isMobile ? "Selling %" : "Selling % at this Target"}
 										type="number"
 										placeholder="0"
