@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { calculateTotalProfit } from "../utils/calculate-total-profit";
 import { convertToNumbers } from "../utils/convert-to-numbers";
 import { formatPrice } from "../utils/format-price";
+import { useBreakpoint } from "../theme/hooks";
 
 type FormInputs = {
 	investedAmount: string;
@@ -68,6 +69,7 @@ export const CalculatorForm = () => {
 	const [totalProfitPercentage, setTotalProfitPercentage] = useState<number>(0);
 	const [investmentAmount, setInvestmentAmount] = useState<number>(0);
 	const [totalExitAmount, setTotalExitAmount] = useState<number>(0);
+	const { isMobile } = useBreakpoint();
 
 	const {
 		control,
@@ -124,12 +126,12 @@ export const CalculatorForm = () => {
 	};
 
 	return (
-		<div className="grid grid-cols-1 gap-8 mt-8">
+		<div className="grid grid-cols-1 gap-8">
 			<Card className="dark:bg-transparent dark:border-gray-600 dark:border-1">
 				<CardHeader className="font-bold">Investment Result</CardHeader>
 				<CardBody>
-					<div className="grid grid-cols-3 gap-1">
-						<div className="flex flex-col gap-2 items-start">
+					<div className="grid xs:grid-cols-1 md:grid-cols-3 xs:gap-3 md:gap-1">
+						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
 							<p className="text-sm">Profit/Loss</p>
 
 							<div className="flex gap-4">
@@ -137,7 +139,7 @@ export const CalculatorForm = () => {
 							</div>
 						</div>
 
-						<div className="flex flex-col gap-2 items-start">
+						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
 							<p className="text-sm">Total Investment Amount</p>
 
 							<div className="flex gap-4">
@@ -145,7 +147,7 @@ export const CalculatorForm = () => {
 							</div>
 						</div>
 
-						<div className="flex flex-col gap-2 items-start">
+						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
 							<p className="text-sm">Total Exit Amount</p>
 
 							<div className="flex gap-4">
@@ -157,7 +159,7 @@ export const CalculatorForm = () => {
 			</Card>
 
 			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col" noValidate>
-				<div className="grid grid-cols-2 gap-unit-md">
+				<div className="grid xs:grid-cols-1 md:grid-cols-2 gap-unit-md">
 					<Card>
 						<CardHeader className="font-bold">Investments</CardHeader>
 						<CardBody className="grid grid-cols-2 gap-unit-md">
@@ -173,6 +175,7 @@ export const CalculatorForm = () => {
 										startContent={"$"}
 										label="Invested Amount"
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("investedAmount")}
 										errorMessage={errors.investedAmount?.message}
 										isClearable
@@ -192,6 +195,7 @@ export const CalculatorForm = () => {
 										startContent={"$"}
 										label="Buy Price"
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("buyPrice")}
 										errorMessage={errors.buyPrice?.message}
 										isClearable
@@ -216,6 +220,7 @@ export const CalculatorForm = () => {
 										startContent={"$"}
 										label="Amount"
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("target1")}
 										errorMessage={errors.target1?.message}
 										isClearable
@@ -233,8 +238,9 @@ export const CalculatorForm = () => {
 										onBlur={onBlur}
 										value={value}
 										startContent={"%"}
-										label="Selling % at this Target"
+										label={isMobile ? "Selling %" : "Selling % at this Target"}
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("sellingPercentageAtTarget1")}
 										errorMessage={errors.sellingPercentageAtTarget1?.message}
 										isClearable
@@ -259,6 +265,7 @@ export const CalculatorForm = () => {
 										startContent={"$"}
 										label="Amount"
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("target2")}
 										errorMessage={errors.target2?.message}
 										isClearable
@@ -276,8 +283,9 @@ export const CalculatorForm = () => {
 										onBlur={onBlur}
 										value={value}
 										startContent={"%"}
-										label="Selling % at this Target"
+										label={isMobile ? "Selling %" : "Selling % at this Target"}
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("sellingPercentageAtTarget2")}
 										errorMessage={errors.sellingPercentageAtTarget2?.message}
 										isClearable
@@ -302,6 +310,7 @@ export const CalculatorForm = () => {
 										startContent={"$"}
 										label="Amount"
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("target3")}
 										errorMessage={errors.target3?.message}
 										isClearable
@@ -319,8 +328,9 @@ export const CalculatorForm = () => {
 										onBlur={onBlur}
 										value={value}
 										startContent={"%"}
-										label="Selling % at this Target"
+										label={isMobile ? "Selling %" : "Selling % at this Target"}
 										type="number"
+										placeholder="0"
 										onClear={() => resetField("sellingPercentageAtTarget3")}
 										errorMessage={errors.sellingPercentageAtTarget3?.message}
 										isClearable
@@ -331,8 +341,8 @@ export const CalculatorForm = () => {
 					</Card>
 				</div>
 
-				<div className="grid grid-cols-6 gap-4 mt-8">
-					<Button color="danger" size="lg" className="col-start-5" onClick={onReset}>
+				<div className="grid xs:grid-cols-2 md:grid-cols-6 gap-4 mt-8">
+					<Button color="danger" size="lg" className="md:col-start-5" onClick={onReset}>
 						Reset
 					</Button>
 
