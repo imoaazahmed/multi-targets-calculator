@@ -73,6 +73,14 @@ module.exports = {
 			gray: getPaletteSwatches("gray"),
 			red: getPaletteSwatches("red"),
 			blue: getPaletteSwatches("blue"),
+			profit: {
+				400: "#30d158",
+				500: "#6ccf59",
+			},
+			loss: {
+				400: "#ff4444",
+				500: "#ff4d4d",
+			},
 		}),
 		columns: {
 			auto: "auto",
