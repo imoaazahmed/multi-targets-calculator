@@ -11,7 +11,7 @@ import { scrollToTop } from "../../utils/scroll-to-top";
 import { PriceSymbolIcon } from "./price-symbol-icon";
 import { PercentageSymbolIcon } from "./percentage-symbol-icon";
 import { CustomLabel } from "./custom-label";
-import { SuggestedPercentages } from "./suggested-percentage";
+import { SuggestedPercentages } from "./suggested-percentages";
 
 export type FormInputs = {
 	investedAmount: string;

@@ -10,7 +10,7 @@ interface SuggestedPercentagesProps {
 export const SuggestedPercentages = ({ inputName, setValue }: SuggestedPercentagesProps) => {
 	return (
 		<ScrollShadow hideScrollBar className="flex gap-2 max-w-full">
-			{["20", "30", "40", "50", "100"].map((val) => (
+			{["0", "20", "30", "40", "50", "100"].map((val) => (
 				<Chip size="sm" className="cursor-pointer" onClick={() => setValue(inputName, val)}>
 					{val}%
 				</Chip>
