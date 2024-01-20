@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import "./main.css";
 import { Providers } from "./providers.tsx";
 import { BrowserRouter } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
@@ -12,6 +13,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 				<Providers>
 					<App />
 				</Providers>
+
+				<Analytics />
 			</BrowserRouter>
 		</Suspense>
 	</React.StrictMode>
