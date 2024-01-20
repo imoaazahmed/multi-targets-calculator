@@ -170,7 +170,7 @@ export const CalculatorForm = () => {
 										startContent={<PriceSymbolIcon />}
 										label={
 											<CustomLabel inputName="investedAmount" setValue={setValue}>
-												Investment Amount
+												Investment
 											</CustomLabel>
 										}
 										type="number"

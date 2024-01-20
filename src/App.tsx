@@ -5,7 +5,7 @@ import { Link } from "./theme/components";
 
 function App() {
 	return (
-		<main>
+		<main className="flex flex-col min-h-screen">
 			<Navbar position="static" maxWidth="full">
 				<NavbarBrand>
 					<h1 className="text-xl text-center font-bold">Total Profit Calculator</h1>
@@ -18,10 +18,10 @@ function App() {
 				</NavbarContent>
 			</Navbar>
 
-			<div className="container mx-auto my-8">
+			<div className="container mx-auto flex-1 grid grid-cols-1 my-8">
 				<CalculatorForm />
 
-				<div className="flex gap-unit-xs items-center justify-center mt-8">
+				<div className="flex gap-unit-xs items-center justify-center mt-8 self-end">
 					<p>Made By 🇪🇬</p>
 					<Link href="https://www.linkedin.com/in/imoaazahmed/" isExternal color="foreground">
 						Moaaz
