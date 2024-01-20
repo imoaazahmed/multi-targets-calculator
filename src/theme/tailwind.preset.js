@@ -70,6 +70,7 @@ module.exports = {
 			black: colors.black,
 			white: colors.white,
 			green: colors.green,
+			sky: colors.sky,
 			gray: getPaletteSwatches("gray"),
 			red: getPaletteSwatches("red"),
 			blue: getPaletteSwatches("blue"),
