@@ -9,9 +9,9 @@ export default defineConfig({
 		VitePWA({
 			registerType: "prompt",
 			manifest: {
-				name: "React-vite-app",
-				short_name: "react-vite-app",
-				description: "I am a simple vite app",
+				name: "Multi-targets Calculator",
+				short_name: "multi-targets-calculator",
+				description: "Calculator for multi-targets cryptocurrency trading.",
 				icons: [
 					{
 						src: "/android-chrome-192x192.png",
