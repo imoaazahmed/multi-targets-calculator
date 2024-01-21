@@ -124,7 +124,7 @@ export const CalculatorForm = () => {
 	};
 
 	return (
-		<div className="grid grid-cols-1 gap-8">
+		<div className="flex flex-col gap-8">
 			<Card className="dark:bg-transparent dark:border-gray-600 dark:border-1">
 				<CardHeader className="font-bold">Investment Result</CardHeader>
 				<CardBody>

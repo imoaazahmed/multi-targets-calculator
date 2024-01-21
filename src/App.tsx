@@ -8,7 +8,7 @@ function App() {
 		<main className="flex flex-col min-h-screen">
 			<Navbar position="static" maxWidth="full">
 				<NavbarBrand>
-					<h1 className="text-xl text-center font-bold">Total Profit Calculator</h1>
+					<h1 className="text-xl text-center font-bold">Multi-Targets Calculator</h1>
 				</NavbarBrand>
 
 				<NavbarContent justify="end">
