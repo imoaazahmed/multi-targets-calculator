@@ -61,6 +61,7 @@ export const CalculatorForm = () => {
 		handleSubmit,
 		resetField,
 		setValue,
+		getValues,
 		reset,
 		formState: { errors },
 	} = useForm<FormInputs>({
@@ -131,6 +132,17 @@ export const CalculatorForm = () => {
 		setTotalProfitPercentage(0);
 		setInvestmentAmount(0);
 		setTotalExitAmount(0);
+	};
+
+	const updateAmount = (index: number, newValue: string) => {
+		update(index, {
+			amount: newValue,
+			sellingPercentage: getValues(`targets.${index}.sellingPercentage`),
+		});
+	};
+
+	const updateSellingPercentage = (index: number, newValue: string) => {
+		update(index, { amount: getValues(`targets.${index}.amount`), sellingPercentage: newValue });
 	};
 
 	return (
@@ -228,10 +240,10 @@ export const CalculatorForm = () => {
 										<Input
 											{...field}
 											startContent={<PriceSymbolIcon />}
-											label={<CustomLabel onPaste={(val) => update(index, { ...target, amount: val })}>Amount</CustomLabel>}
+											label={<CustomLabel onPaste={(val) => updateAmount(index, val)}>Amount</CustomLabel>}
 											type="number"
 											placeholder="0"
-											onClear={() => update(index, { ...target, amount: "" })}
+											onClear={() => updateAmount(index, "")}
 											errorMessage={error?.message}
 											isClearable
 										/>
@@ -250,14 +262,14 @@ export const CalculatorForm = () => {
 												label={<CustomLabel>{isMobile ? "Selling %" : "Selling % at this Target"}</CustomLabel>}
 												type="number"
 												placeholder="0"
-												onClear={() => update(index, { ...target, sellingPercentage: "" })}
+												onClear={() => updateSellingPercentage(index, "")}
 												errorMessage={error?.message}
 												isClearable
 											/>
 										)}
 									/>
 
-									<SuggestedPercentages onSuggestedValueClick={(val) => update(index, { ...target, sellingPercentage: val })} />
+									<SuggestedPercentages onSuggestedValueClick={(val) => updateSellingPercentage(index, val)} />
 								</div>
 							</CardBody>
 						</Card>
