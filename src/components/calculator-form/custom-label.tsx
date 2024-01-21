@@ -1,30 +1,32 @@
-import { UseFormSetValue } from "react-hook-form";
-import { FormInputs } from ".";
 import { useClipboard } from "../../hooks/use-clipboard";
 
 interface CustomLabelProps {
-	inputName: keyof FormInputs;
 	children: React.ReactNode;
-	setValue: UseFormSetValue<FormInputs>;
+	onPaste?: (clipboardValue: string) => void;
 }
 
-export const CustomLabel = ({ inputName, children, setValue }: CustomLabelProps) => {
+export const CustomLabel = ({ children, onPaste }: CustomLabelProps) => {
 	const { onPaste: _onPaste } = useClipboard();
 
-	const onPaste = (inputName: keyof FormInputs) => {
+	const onPasteBtnClick = () => {
 		_onPaste().then((val) => {
-			if (!isNaN(Number(val))) {
-				setValue(inputName, val);
+			if (isNaN(Number(val))) {
+				alert(`Clipboard value is not a number.`);
 			}
+
+			onPaste?.(val);
 		});
 	};
 
 	return (
 		<div className="flex items-center gap-2">
 			<p>{children}</p>
-			<p className="text-sky-500 cursor-pointer" onClick={() => onPaste(inputName)}>
-				Paste
-			</p>
+
+			{!!onPaste && (
+				<p className="text-sky-500 cursor-pointer" onClick={onPasteBtnClick}>
+					Paste
+				</p>
+			)}
 		</div>
 	);
 };
