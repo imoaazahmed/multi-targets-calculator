@@ -1,8 +1,8 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, CardBody, CardHeader, Input } from "../../theme/components";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { calculateTotalProfit } from "../../utils/calculate-total-profit";
 import { convertToNumbers } from "../../utils/convert-to-numbers";
 import { useBreakpoint } from "../../theme/hooks";
@@ -13,45 +13,48 @@ import { PercentageSymbolIcon } from "./percentage-symbol-icon";
 import { CustomLabel } from "./custom-label";
 import { SuggestedPercentages } from "./suggested-percentages";
 
+export type Target = {
+	amount: string;
+	sellingPercentage: string;
+};
+
 export type FormInputs = {
 	investedAmount: string;
 	buyPrice: string;
-	target1: string;
-	target2: string;
-	target3: string;
-	sellingPercentageAtTarget1: string;
-	sellingPercentageAtTarget2: string;
-	sellingPercentageAtTarget3: string;
+	targets: Target[];
 };
 
 const defaultValues: FormInputs = {
 	buyPrice: "",
 	investedAmount: "",
-	target1: "",
-	target2: "",
-	target3: "",
-	sellingPercentageAtTarget1: "",
-	sellingPercentageAtTarget2: "",
-	sellingPercentageAtTarget3: "",
+	targets: [
+		{ amount: "", sellingPercentage: "40" },
+		{ amount: "", sellingPercentage: "30" },
+		{ amount: "", sellingPercentage: "30" },
+	],
 };
 
 const schema = yup.object().shape({
 	investedAmount: yup.string().required("Invested amount is required"),
 	buyPrice: yup.string().required("Buy price is required"),
-	target1: yup.string().required("Target 1 is required"),
-	target2: yup.string().required("Target 2 is required"),
-	target3: yup.string().required("Target 3 is required"),
-	sellingPercentageAtTarget1: yup.string().required("Selling percentage at target 1 is required"),
-	sellingPercentageAtTarget2: yup.string().required("Selling percentage at target 2 is required"),
-	sellingPercentageAtTarget3: yup.string().required("Selling percentage at target 3 is required"),
+	targets: yup
+		.array()
+		.of(
+			yup.object().shape({
+				amount: yup.string().required("Target is required"),
+				sellingPercentage: yup.string().required("Selling percentage is required"),
+			})
+		)
+		.required(),
 });
 
 export const CalculatorForm = () => {
+	const { isMobile } = useBreakpoint();
+
 	const [totalProfitInUSD, setTotalProfitInUSD] = useState<number>(0);
 	const [totalProfitPercentage, setTotalProfitPercentage] = useState<number>(0);
 	const [investmentAmount, setInvestmentAmount] = useState<number>(0);
 	const [totalExitAmount, setTotalExitAmount] = useState<number>(0);
-	const { isMobile } = useBreakpoint();
 
 	const {
 		control,
@@ -67,12 +70,10 @@ export const CalculatorForm = () => {
 		defaultValues: { ...defaultValues },
 	});
 
-	// Set default values for T1, T2, T3 percentages
-	useEffect(() => {
-		setValue("sellingPercentageAtTarget1", "40");
-		setValue("sellingPercentageAtTarget2", "30");
-		setValue("sellingPercentageAtTarget3", "30");
-	}, []);
+	const { fields: targets, update } = useFieldArray({
+		control,
+		name: "targets",
+	});
 
 	const onSubmit = (data: FormInputs) => {
 		try {
@@ -85,7 +86,16 @@ export const CalculatorForm = () => {
 				sellingPercentageAtTarget1,
 				sellingPercentageAtTarget2,
 				sellingPercentageAtTarget3,
-			} = convertToNumbers<FormInputs>(data);
+			} = convertToNumbers({
+				investedAmount: data.investedAmount,
+				buyPrice: data.buyPrice,
+				target1: data.targets[0]?.amount,
+				target2: data.targets[1]?.amount,
+				target3: data.targets[2]?.amount,
+				sellingPercentageAtTarget1: data.targets[0]?.sellingPercentage,
+				sellingPercentageAtTarget2: data.targets[1]?.sellingPercentage,
+				sellingPercentageAtTarget3: data.targets[2]?.sellingPercentage,
+			});
 
 			const percentagesSum = sellingPercentageAtTarget1 + sellingPercentageAtTarget2 + sellingPercentageAtTarget3;
 			const isPercentageSumValid = percentagesSum <= 100;
@@ -169,11 +179,7 @@ export const CalculatorForm = () => {
 											onBlur={onBlur}
 											value={value}
 											startContent={<PriceSymbolIcon />}
-											label={
-												<CustomLabel inputName="investedAmount" setValue={setValue}>
-													Investment
-												</CustomLabel>
-											}
+											label={<CustomLabel onPaste={(val) => setValue("investedAmount", val)}>Investment</CustomLabel>}
 											type="number"
 											placeholder="0"
 											onClear={() => resetField("investedAmount")}
@@ -197,11 +203,7 @@ export const CalculatorForm = () => {
 											onBlur={onBlur}
 											value={value}
 											startContent={<PriceSymbolIcon />}
-											label={
-												<CustomLabel inputName="buyPrice" setValue={setValue}>
-													Buy Price
-												</CustomLabel>
-											}
+											label={<CustomLabel onPaste={(val) => setValue("buyPrice", val)}>Buy Price</CustomLabel>}
 											type="number"
 											placeholder="0"
 											onClear={() => resetField("buyPrice")}
@@ -214,164 +216,52 @@ export const CalculatorForm = () => {
 						</Card>
 					</div>
 
-					<Card>
-						<CardHeader className="font-bold">Target 1</CardHeader>
-						<CardBody className="grid grid-cols-2 gap-unit-md">
-							{/* Target 1 Input */}
-							<Controller
-								name="target1"
-								control={control}
-								render={({ field: { onChange, onBlur, value } }) => (
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										startContent={<PriceSymbolIcon />}
-										label={
-											<CustomLabel inputName="target1" setValue={setValue}>
-												Amount
-											</CustomLabel>
-										}
-										type="number"
-										placeholder="0"
-										onClear={() => resetField("target1")}
-										errorMessage={errors.target1?.message}
-										isClearable
-									/>
-								)}
-							/>
-
-							{/* Selling Percentage at Target 1 Input */}
-							<div className="flex flex-col gap-2 items-start">
+					{targets.map((target, index) => (
+						<Card key={target.id}>
+							<CardHeader className="font-bold">Target {index + 1}</CardHeader>
+							<CardBody className="grid grid-cols-2 gap-unit-md">
+								{/* Target Input */}
 								<Controller
-									name="sellingPercentageAtTarget1"
 									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
+									name={`targets.${index}.amount`}
+									render={({ field, fieldState: { error } }) => (
 										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PercentageSymbolIcon />}
-											label={isMobile ? "Selling %" : "Selling % at this Target"}
+											{...field}
+											startContent={<PriceSymbolIcon />}
+											label={<CustomLabel onPaste={(val) => update(index, { ...target, amount: val })}>Amount</CustomLabel>}
 											type="number"
 											placeholder="0"
-											onClear={() => resetField("sellingPercentageAtTarget1")}
-											errorMessage={errors.sellingPercentageAtTarget1?.message}
+											onClear={() => update(index, { ...target, amount: "" })}
+											errorMessage={error?.message}
 											isClearable
 										/>
 									)}
 								/>
 
-								<SuggestedPercentages inputName="sellingPercentageAtTarget1" setValue={setValue} />
-							</div>
-						</CardBody>
-					</Card>
-
-					<Card>
-						<CardHeader className="font-bold">Target 2</CardHeader>
-						<CardBody className="grid grid-cols-2 gap-unit-md">
-							{/* Target 2 Input */}
-							<Controller
-								name="target2"
-								control={control}
-								render={({ field: { onChange, onBlur, value } }) => (
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										startContent={<PriceSymbolIcon />}
-										label={
-											<CustomLabel inputName="target2" setValue={setValue}>
-												Amount
-											</CustomLabel>
-										}
-										type="number"
-										placeholder="0"
-										onClear={() => resetField("target2")}
-										errorMessage={errors.target2?.message}
-										isClearable
+								{/* Selling Percentage Input */}
+								<div className="flex flex-col gap-2 items-start">
+									<Controller
+										name={`targets.${index}.sellingPercentage`}
+										control={control}
+										render={({ field, fieldState: { error } }) => (
+											<Input
+												{...field}
+												startContent={<PercentageSymbolIcon />}
+												label={<CustomLabel>{isMobile ? "Selling %" : "Selling % at this Target"}</CustomLabel>}
+												type="number"
+												placeholder="0"
+												onClear={() => update(index, { ...target, sellingPercentage: "" })}
+												errorMessage={error?.message}
+												isClearable
+											/>
+										)}
 									/>
-								)}
-							/>
 
-							{/* Selling Percentage at Target 2 Input */}
-							<div className="flex flex-col gap-2 items-start">
-								<Controller
-									name="sellingPercentageAtTarget2"
-									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PercentageSymbolIcon />}
-											label={isMobile ? "Selling %" : "Selling % at this Target"}
-											type="number"
-											placeholder="0"
-											onClear={() => resetField("sellingPercentageAtTarget2")}
-											errorMessage={errors.sellingPercentageAtTarget2?.message}
-											isClearable
-										/>
-									)}
-								/>
-
-								<SuggestedPercentages inputName="sellingPercentageAtTarget2" setValue={setValue} />
-							</div>
-						</CardBody>
-					</Card>
-
-					<Card>
-						<CardHeader className="font-bold">Target 3</CardHeader>
-						<CardBody className="grid grid-cols-2 gap-unit-md">
-							{/* Target 3 Input */}
-							<Controller
-								name="target3"
-								control={control}
-								render={({ field: { onChange, onBlur, value } }) => (
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										startContent={<PriceSymbolIcon />}
-										label={
-											<CustomLabel inputName="target3" setValue={setValue}>
-												Amount
-											</CustomLabel>
-										}
-										type="number"
-										placeholder="0"
-										onClear={() => resetField("target3")}
-										errorMessage={errors.target3?.message}
-										isClearable
-									/>
-								)}
-							/>
-
-							{/* Selling Percentage at Target 3 Input */}
-							<div className="flex flex-col gap-2 items-start">
-								<Controller
-									name="sellingPercentageAtTarget3"
-									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PercentageSymbolIcon />}
-											label={isMobile ? "Selling %" : "Selling % at this Target"}
-											type="number"
-											placeholder="0"
-											onClear={() => resetField("sellingPercentageAtTarget3")}
-											errorMessage={errors.sellingPercentageAtTarget3?.message}
-											isClearable
-										/>
-									)}
-								/>
-
-								<SuggestedPercentages inputName="sellingPercentageAtTarget3" setValue={setValue} />
-							</div>
-						</CardBody>
-					</Card>
+									<SuggestedPercentages onSuggestedValueClick={(val) => update(index, { ...target, sellingPercentage: val })} />
+								</div>
+							</CardBody>
+						</Card>
+					))}
 				</div>
 
 				<div className="grid xs:grid-cols-2 md:grid-cols-6 gap-4 mt-8">
