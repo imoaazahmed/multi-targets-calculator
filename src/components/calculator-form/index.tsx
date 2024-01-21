@@ -125,7 +125,7 @@ export const CalculatorForm = () => {
 
 	return (
 		<div className="flex flex-col gap-8">
-			<Card className="dark:bg-transparent dark:border-gray-600 dark:border-1">
+			<Card className="dark:bg-gradient-to-r from-blue-900 to-red-900 dark:border-0">
 				<CardHeader className="font-bold">Investment Result</CardHeader>
 				<CardBody>
 					<div className="grid xs:grid-cols-1 md:grid-cols-4 xs:gap-3 md:gap-1">
@@ -155,58 +155,64 @@ export const CalculatorForm = () => {
 
 			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col" noValidate>
 				<div className="grid xs:grid-cols-1 md:grid-cols-2 gap-unit-md">
-					<Card>
-						<CardHeader className="font-bold">Investments</CardHeader>
-						<CardBody className="grid grid-cols-2 gap-unit-md">
-							{/* Invested Amount Input */}
-							<Controller
-								name="investedAmount"
-								control={control}
-								render={({ field: { onChange, onBlur, value } }) => (
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										startContent={<PriceSymbolIcon />}
-										label={
-											<CustomLabel inputName="investedAmount" setValue={setValue}>
-												Investment
-											</CustomLabel>
-										}
-										type="number"
-										placeholder="0"
-										onClear={() => resetField("investedAmount")}
-										errorMessage={errors.investedAmount?.message}
-										isClearable
-									/>
-								)}
-							/>
-
-							{/* Buy Price Input */}
-							<Controller
-								name="buyPrice"
-								control={control}
-								render={({ field: { onChange, onBlur, value } }) => (
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										startContent={<PriceSymbolIcon />}
-										label={
-											<CustomLabel inputName="buyPrice" setValue={setValue}>
-												Buy Price
-											</CustomLabel>
-										}
-										type="number"
-										placeholder="0"
-										onClear={() => resetField("buyPrice")}
-										errorMessage={errors.buyPrice?.message}
-										isClearable
-									/>
-								)}
-							/>
-						</CardBody>
-					</Card>
+					<div className="flex gap-unit-md">
+						<Card className="flex-1">
+							<CardHeader className="font-bold">Investments</CardHeader>
+							<CardBody className="">
+								{/* Invested Amount Input */}
+								<Controller
+									name="investedAmount"
+									control={control}
+									render={({ field: { onChange, onBlur, value } }) => (
+										<Input
+											onChange={onChange}
+											onBlur={onBlur}
+											value={value}
+											startContent={<PriceSymbolIcon />}
+											label={
+												<CustomLabel inputName="investedAmount" setValue={setValue}>
+													Investment
+												</CustomLabel>
+											}
+											type="number"
+											placeholder="0"
+											onClear={() => resetField("investedAmount")}
+											errorMessage={errors.investedAmount?.message}
+											isClearable
+										/>
+									)}
+								/>
+							</CardBody>
+						</Card>
+						<Card className="flex-1">
+							<CardHeader className="font-bold">Buy Price</CardHeader>
+							<CardBody className="">
+								{/* Buy Price Input */}
+								<Controller
+									name="buyPrice"
+									control={control}
+									render={({ field: { onChange, onBlur, value } }) => (
+										<Input
+											onChange={onChange}
+											onBlur={onBlur}
+											value={value}
+											startContent={<PriceSymbolIcon />}
+											label={
+												<CustomLabel inputName="buyPrice" setValue={setValue}>
+													Buy Price
+												</CustomLabel>
+											}
+											type="number"
+											placeholder="0"
+											onClear={() => resetField("buyPrice")}
+											errorMessage={errors.buyPrice?.message}
+											isClearable
+										/>
+									)}
+								/>
+							</CardBody>
+						</Card>
+					</div>
 
 					<Card>
 						<CardHeader className="font-bold">Target 1</CardHeader>
