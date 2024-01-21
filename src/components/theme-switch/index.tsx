@@ -4,7 +4,7 @@ import { SunIcon } from "./icons/sun-icon";
 import { useThemeMode } from "../../theme/hooks/use-theme-mode";
 
 export const ThemeSwitch = (props: SwitchProps) => {
-	const { toggleThemeMode, isDark } = useThemeMode("dark");
+	const { toggleThemeMode, isDark } = useThemeMode();
 	const { Component, slots, getBaseProps, getInputProps, getWrapperProps } = useSwitch(props);
 
 	return (
