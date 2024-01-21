@@ -87,11 +87,11 @@ export const CalculatorForm = () => {
 				investedAmount: data.investedAmount,
 				buyPrice: data.buyPrice,
 				target1: data.targets[0]?.amount,
-				target2: data.targets[0]?.amount,
-				target3: data.targets[0]?.amount,
+				target2: data.targets[1]?.amount,
+				target3: data.targets[2]?.amount,
 				sellingPercentageAtTarget1: data.targets[0]?.sellingPercentage,
-				sellingPercentageAtTarget2: data.targets[0]?.sellingPercentage,
-				sellingPercentageAtTarget3: data.targets[0]?.sellingPercentage,
+				sellingPercentageAtTarget2: data.targets[1]?.sellingPercentage,
+				sellingPercentageAtTarget3: data.targets[2]?.sellingPercentage,
 			});
 
 			const percentagesSum = sellingPercentageAtTarget1 + sellingPercentageAtTarget2 + sellingPercentageAtTarget3;
