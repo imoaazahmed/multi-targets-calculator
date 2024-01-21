@@ -37,12 +37,15 @@ const defaultValues: FormInputs = {
 const schema = yup.object().shape({
 	investedAmount: yup.string().required("Invested amount is required"),
 	buyPrice: yup.string().required("Buy price is required"),
-	targets: yup.array(
-		yup.object().shape({
-			amount: yup.string().required("Target is requires"),
-			sellingPercentage: yup.string().required("Selling percentage is required"),
-		})
-	),
+	targets: yup
+		.array()
+		.of(
+			yup.object().shape({
+				amount: yup.string().required("Target is required"),
+				sellingPercentage: yup.string().required("Selling percentage is required"),
+			})
+		)
+		.required(),
 });
 
 export const CalculatorForm = () => {
