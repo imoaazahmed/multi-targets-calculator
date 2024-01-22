@@ -277,11 +277,11 @@ export const CalculatorForm = () => {
 				</div>
 
 				<div className="grid xs:grid-cols-2 md:grid-cols-6 gap-4 mt-8">
-					<Button color="danger" size="lg" className="md:col-start-5" onClick={onReset}>
+					<Button color="danger" variant="shadow" size="lg" className="md:col-start-5" onClick={onReset}>
 						Reset
 					</Button>
 
-					<Button type="submit" color="primary" size="lg">
+					<Button type="submit" variant="shadow" color="primary" size="lg">
 						Submit
 					</Button>
 				</div>

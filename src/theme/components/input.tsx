@@ -4,7 +4,7 @@ export const Input = extendVariants(OInput, {
 	defaultVariants: {
 		size: "md",
 		labelPlacement: "inside",
-		variant: "bordered",
+		variant: "flat",
 		color: "default",
 		radius: "md",
 	},
