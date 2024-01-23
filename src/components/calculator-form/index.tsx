@@ -2,9 +2,6 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, CardBody, CardHeader, Input } from "../../theme/components";
-import { useState } from "react";
-import { calculateTotalProfit } from "../../utils/calculate-total-profit";
-import { convertToNumbers } from "../../utils/convert-to-numbers";
 import { useBreakpoint } from "../../theme/hooks";
 import { ProfitLossResult } from "../profit-loss-result";
 import { scrollToTop } from "../../utils/scroll-to-top";
@@ -12,6 +9,8 @@ import { PriceSymbolIcon } from "./price-symbol-icon";
 import { PercentageSymbolIcon } from "./percentage-symbol-icon";
 import { CustomLabel } from "./custom-label";
 import { SuggestedPercentages } from "./suggested-percentages";
+import { useInvestmentResults } from "./hooks/use-investment-results";
+import toNumber from "lodash/tonumber";
 
 export type Target = {
 	amount: string;
@@ -53,15 +52,7 @@ const schema = yup.object().shape({
 
 export const CalculatorForm = () => {
 	const { isMobile } = useBreakpoint();
-
-	const [totalProfitInUSD, setTotalProfitInUSD] = useState<number>(0);
-	const [totalProfitPercentage, setTotalProfitPercentage] = useState<number>(0);
-	const [investmentAmount, setInvestmentAmount] = useState<number>(0);
-	const [totalExitAmount, setTotalExitAmount] = useState<number>(0);
-
-	const [stopLossPrice, setStopLossPrice] = useState<number>(0);
-	const [stopLossPercentage, setStopLossPercentage] = useState<number>(0);
-	const [totalStopLossExitAmount, setTotalStopLossExitAmount] = useState<number>(0);
+	const { state, onResultsUpdate, onResultsReset } = useInvestmentResults();
 
 	const {
 		control,
@@ -85,56 +76,25 @@ export const CalculatorForm = () => {
 
 	const onSubmit = (data: FormInputs) => {
 		try {
-			const {
-				investedAmount,
-				buyPrice,
-				stopLossPrice,
-				target1,
-				target2,
-				target3,
-				sellingPercentageAtTarget1,
-				sellingPercentageAtTarget2,
-				sellingPercentageAtTarget3,
-			} = convertToNumbers({
-				investedAmount: data.investedAmount,
-				buyPrice: data.buyPrice,
-				stopLossPrice: data.stopLossPrice,
-				target1: data.targets[0]?.amount,
-				target2: data.targets[1]?.amount,
-				target3: data.targets[2]?.amount,
-				sellingPercentageAtTarget1: data.targets[0]?.sellingPercentage,
-				sellingPercentageAtTarget2: data.targets[1]?.sellingPercentage,
-				sellingPercentageAtTarget3: data.targets[2]?.sellingPercentage,
+			onResultsUpdate({
+				investedAmount: toNumber(data.investedAmount),
+				buyPrice: toNumber(data.buyPrice),
+				stopLossPrice: toNumber(data.stopLossPrice),
+				targets: [
+					{
+						price: toNumber(data.targets[0]?.amount),
+						sellingPercentage: toNumber(data.targets[0]?.sellingPercentage),
+					},
+					{
+						price: toNumber(data.targets[1]?.amount),
+						sellingPercentage: toNumber(data.targets[1]?.sellingPercentage),
+					},
+					{
+						price: toNumber(data.targets[2]?.amount),
+						sellingPercentage: toNumber(data.targets[2]?.sellingPercentage),
+					},
+				],
 			});
-
-			const percentagesSum = sellingPercentageAtTarget1 + sellingPercentageAtTarget2 + sellingPercentageAtTarget3;
-			const isPercentageSumValid = percentagesSum <= 100;
-
-			if (!isPercentageSumValid) return alert(`Percentages sum result is ${percentagesSum}% it should be equal or less than 100%`);
-
-			const profit = calculateTotalProfit(
-				investedAmount,
-				buyPrice,
-				target1,
-				target2,
-				target3,
-				sellingPercentageAtTarget1,
-				sellingPercentageAtTarget2,
-				sellingPercentageAtTarget3
-			);
-
-			setTotalProfitInUSD(profit);
-			setTotalProfitPercentage((profit / investedAmount) * 100);
-			setInvestmentAmount(investedAmount);
-			setTotalExitAmount(investedAmount + profit);
-
-			const numberOfCoins = investedAmount / buyPrice;
-			const totalLossAmount = numberOfCoins * stopLossPrice;
-			const stopLossAmount = investedAmount - totalLossAmount;
-
-			setStopLossPrice(stopLossAmount);
-			setStopLossPercentage((stopLossAmount / investedAmount) * 100);
-			setTotalStopLossExitAmount(totalLossAmount);
 
 			scrollToTop();
 		} catch (error) {
@@ -145,13 +105,7 @@ export const CalculatorForm = () => {
 
 	const onReset = () => {
 		reset(defaultValues);
-		setTotalProfitInUSD(0);
-		setTotalProfitPercentage(0);
-		setInvestmentAmount(0);
-		setTotalExitAmount(0);
-		setStopLossPrice(0);
-		setStopLossPercentage(0);
-		setTotalStopLossExitAmount(0);
+		onResultsReset();
 	};
 
 	const updateAmount = (index: number, newValue: string) => {
@@ -176,10 +130,10 @@ export const CalculatorForm = () => {
 
 							<div className="flex gap-4">
 								<ProfitLossResult
-									amount={totalProfitInUSD}
-									currencyCode="USD"
-									percentage={totalProfitPercentage}
-									isLoss={totalProfitInUSD < 0}
+									amount={state.profit.amount}
+									currencyCode={state.profit.currencyCode}
+									percentage={state.profit.percentage}
+									isLoss={state.profit.isLoss}
 								/>
 							</div>
 						</div>
@@ -188,7 +142,11 @@ export const CalculatorForm = () => {
 							<p className="text-sm">Total Exit Amount</p>
 
 							<div className="flex gap-4">
-								<ProfitLossResult amount={totalExitAmount} currencyCode="USD" isLoss={totalExitAmount < investmentAmount} />
+								<ProfitLossResult
+									amount={state.profit.totalExitAmount}
+									currencyCode={state.profit.currencyCode}
+									isLoss={state.profit.isLoss}
+								/>
 							</div>
 						</div>
 
@@ -197,10 +155,10 @@ export const CalculatorForm = () => {
 
 							<div className="flex gap-4">
 								<ProfitLossResult
-									amount={stopLossPrice}
-									currencyCode="USD"
-									percentage={stopLossPercentage}
-									isLoss={stopLossPrice !== 0}
+									amount={state.stopLoss.amount}
+									currencyCode={state.stopLoss.currencyCode}
+									percentage={state.stopLoss.percentage}
+									isLoss={state.stopLoss.isLoss}
 								/>
 							</div>
 						</div>
@@ -209,7 +167,11 @@ export const CalculatorForm = () => {
 							<p className="text-sm">Total STOP-LOSS Exit Amount</p>
 
 							<div className="flex gap-4">
-								<ProfitLossResult amount={totalStopLossExitAmount} currencyCode="USD" isLoss={totalStopLossExitAmount !== 0} />
+								<ProfitLossResult
+									amount={state.stopLoss.totalExitAmount}
+									currencyCode={state.stopLoss.currencyCode}
+									isLoss={state.stopLoss.isLoss}
+								/>
 							</div>
 						</div>
 					</div>

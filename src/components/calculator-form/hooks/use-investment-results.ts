@@ -18,6 +18,7 @@ type Profit = {
 	totalExitAmount: number;
 	percentage: number;
 	currencyCode: string;
+	isLoss: boolean;
 };
 
 type StopLoss = {
@@ -25,6 +26,7 @@ type StopLoss = {
 	totalExitAmount: number;
 	percentage: number;
 	currencyCode: string;
+	isLoss: boolean;
 };
 
 type ReducerState = {
@@ -40,12 +42,14 @@ const initialState: ReducerState = {
 		totalExitAmount: 0,
 		percentage: 0,
 		currencyCode: "USD",
+		isLoss: false,
 	},
 	stopLoss: {
 		amount: 0,
 		totalExitAmount: 0,
 		percentage: 0,
 		currencyCode: "USD",
+		isLoss: false,
 	},
 };
 
@@ -77,7 +81,7 @@ interface UseInvestmentResultsReturn {
 	onResultsReset: () => void;
 }
 
-export const useCalculatorForm = (): UseInvestmentResultsReturn => {
+export const useInvestmentResults = (): UseInvestmentResultsReturn => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	const onResultsUpdate = useCallback((data: OnResultsUpdateData) => {
@@ -110,12 +114,14 @@ export const useCalculatorForm = (): UseInvestmentResultsReturn => {
 					totalExitAmount: profit + investedAmount,
 					percentage: (profit / investedAmount) * 100,
 					currencyCode: "USD",
+					isLoss: profit + investedAmount < investedAmount,
 				},
 				stopLoss: {
 					amount: stopLossAmount,
 					totalExitAmount: totalLossAmount,
 					percentage: (stopLossAmount / investedAmount) * 100,
 					currencyCode: "USD",
+					isLoss: stopLossPrice !== 0 || totalLossAmount !== 0,
 				},
 			},
 		});
