@@ -1,7 +1,7 @@
 import { useCallback, useReducer } from "react";
-import { multiTargetsCalculator } from "../utils/multi-targets-calculator";
-import { CalculatorInputs } from "../types";
-import { validatePercentage } from "../utils/validate-percentage";
+import { multiTargetsCalculator } from "@/components/calculator-form/utils/multi-targets-calculator";
+import { CalculatorInputs } from "@/components/calculator-form/types";
+import { validatePercentage } from "@/components/calculator-form/utils/validate-percentage";
 
 type Profit = {
 	amount: number;

@@ -1,7 +1,7 @@
 import { useSwitch, VisuallyHidden, SwitchProps } from "@nextui-org/react";
-import { MoonIcon } from "./icons/moon-icon";
-import { SunIcon } from "./icons/sun-icon";
-import { useThemeMode } from "../../theme/hooks/use-theme-mode";
+import { MoonIcon } from "@/components/theme-switch/icons/moon-icon";
+import { SunIcon } from "@/components/theme-switch/icons/sun-icon";
+import { useThemeMode } from "@/theme/hooks/use-theme-mode";
 
 export const ThemeSwitch = (props: SwitchProps) => {
 	const { toggleThemeMode, isDark } = useThemeMode();

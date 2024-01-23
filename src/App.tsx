@@ -1,7 +1,7 @@
-import { CalculatorForm } from "./components/calculator-form";
-import { ThemeSwitch } from "./components/theme-switch";
+import { CalculatorForm } from "@/components/calculator-form";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
-import { Link } from "./theme/components";
+import { Link } from "@/theme/components";
 
 function App() {
 	return (

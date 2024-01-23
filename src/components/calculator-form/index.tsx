@@ -1,16 +1,16 @@
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Card, CardBody, CardHeader, Input } from "../../theme/components";
-import { useBreakpoint } from "../../theme/hooks";
-import { ProfitLossResult } from "../profit-loss-result";
-import { scrollToTop } from "../../utils/scroll-to-top";
-import { PriceSymbolIcon } from "./components/price-symbol-icon";
-import { PercentageSymbolIcon } from "./components/percentage-symbol-icon";
-import { CustomLabel } from "./components/custom-label";
-import { SuggestedPercentages } from "./components/suggested-percentages";
-import { useInvestmentResults } from "./hooks/use-investment-results";
+import { Button, Card, CardBody, CardHeader, Input } from "@/theme/components";
+import { ProfitLossResult } from "@/components/profit-loss-result";
+import { scrollToTop } from "@/utils/scroll-to-top";
+import { PercentageSymbolIcon } from "@/components/calculator-form/components/percentage-symbol-icon";
+import { CustomLabel } from "@/components/calculator-form/components/custom-label";
+import { SuggestedPercentages } from "@/components/calculator-form/components/suggested-percentages";
+import { useInvestmentResults } from "@/components/calculator-form/hooks/use-investment-results";
 import toNumber from "lodash/toNumber";
+import { useBreakpoint } from "@/theme/hooks";
+import { PriceSymbolIcon } from "@/components/calculator-form/components/price-symbol-icon";
 
 export type Target = {
 	price: string;
