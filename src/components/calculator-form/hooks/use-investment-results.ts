@@ -1,5 +1,5 @@
 import { useCallback, useReducer } from "react";
-import { calculateTotalProfit } from "../utils/calculate-total-profit";
+import { multiTargetsCalculator } from "../utils/multi-targets-calculator";
 
 type Target = {
 	price: number;
@@ -91,37 +91,29 @@ export const useInvestmentResults = (): UseInvestmentResultsReturn => {
 
 		if (!isValid) return alert(`Total selling percentages is ${totalPercentages}%, it should be less than or equal to 100%`);
 
-		const profit = calculateTotalProfit(
+		const { profit, profitPercentage, totalRevenue, isLoss, stopLoss, stopLossPercentage, totalStopLossRevenue } = multiTargetsCalculator({
 			investedAmount,
 			buyPrice,
-			targets[0]?.price,
-			targets[1]?.price,
-			targets[2]?.price,
-			targets[0]?.sellingPercentage,
-			targets[1]?.sellingPercentage,
-			targets[2]?.sellingPercentage
-		);
-
-		const numberOfCoins = investedAmount / buyPrice;
-		const totalLossAmount = numberOfCoins * stopLossPrice;
-		const stopLossAmount = investedAmount - totalLossAmount;
+			stopLossPrice,
+			targets,
+		});
 
 		dispatch({
 			type: "UPDATE",
 			payload: {
 				profit: {
 					amount: profit,
-					totalExitAmount: profit + investedAmount,
-					percentage: (profit / investedAmount) * 100,
+					totalExitAmount: totalRevenue,
+					percentage: profitPercentage,
 					currencyCode: "USD",
-					isLoss: profit + investedAmount < investedAmount,
+					isLoss: isLoss,
 				},
 				stopLoss: {
-					amount: stopLossAmount,
-					totalExitAmount: totalLossAmount,
-					percentage: (stopLossAmount / investedAmount) * 100,
+					amount: stopLoss,
+					totalExitAmount: totalStopLossRevenue,
+					percentage: stopLossPercentage,
 					currencyCode: "USD",
-					isLoss: stopLossPrice !== 0 || totalLossAmount !== 0,
+					isLoss: stopLoss !== 0 || totalStopLossRevenue !== 0,
 				},
 			},
 		});
