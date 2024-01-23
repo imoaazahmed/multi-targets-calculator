@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useCallback, useReducer } from "react";
 import { calculateTotalProfit } from "../utils/calculate-total-profit";
 
 type Target = {
@@ -60,13 +60,14 @@ const reducer = (state: ReducerState, action: ReducerAction) => {
 	}
 };
 
-const validatePercentage = (percentages: number[]) => {
-	let totalPercentages = 0;
-	let isValid = false;
+type ValidatePercentageReturn = {
+	totalPercentages: number;
+	isValid: boolean;
+};
 
-	percentages.forEach((value) => totalPercentages + value);
-	isValid = totalPercentages <= 100;
-
+const validatePercentage = (percentages: number[]): ValidatePercentageReturn => {
+	const totalPercentages = percentages.reduce((total, value) => total + value, 0);
+	const isValid = totalPercentages <= 100;
 	return { totalPercentages, isValid };
 };
 
@@ -79,7 +80,7 @@ interface UseInvestmentResultsReturn {
 export const useCalculatorForm = (): UseInvestmentResultsReturn => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
-	const onResultsUpdate = (data: OnResultsUpdateData) => {
+	const onResultsUpdate = useCallback((data: OnResultsUpdateData) => {
 		const { investedAmount, buyPrice, stopLossPrice, targets } = data;
 
 		const { totalPercentages, isValid } = validatePercentage(targets?.map((t) => t?.sellingPercentage));
@@ -118,11 +119,11 @@ export const useCalculatorForm = (): UseInvestmentResultsReturn => {
 				},
 			},
 		});
-	};
+	}, []);
 
-	const onResultsReset = () => {
+	const onResultsReset = useCallback(() => {
 		dispatch({ type: "RESET" });
-	};
+	}, []);
 
 	return {
 		state,
