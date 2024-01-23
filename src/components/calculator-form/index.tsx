@@ -2,46 +2,48 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, CardBody, CardHeader, Input } from "../../theme/components";
-import { useState } from "react";
-import { calculateTotalProfit } from "../../utils/calculate-total-profit";
-import { convertToNumbers } from "../../utils/convert-to-numbers";
 import { useBreakpoint } from "../../theme/hooks";
 import { ProfitLossResult } from "../profit-loss-result";
 import { scrollToTop } from "../../utils/scroll-to-top";
-import { PriceSymbolIcon } from "./price-symbol-icon";
-import { PercentageSymbolIcon } from "./percentage-symbol-icon";
-import { CustomLabel } from "./custom-label";
-import { SuggestedPercentages } from "./suggested-percentages";
+import { PriceSymbolIcon } from "./components/price-symbol-icon";
+import { PercentageSymbolIcon } from "./components/percentage-symbol-icon";
+import { CustomLabel } from "./components/custom-label";
+import { SuggestedPercentages } from "./components/suggested-percentages";
+import { useInvestmentResults } from "./hooks/use-investment-results";
+import toNumber from "lodash/tonumber";
 
 export type Target = {
-	amount: string;
+	price: string;
 	sellingPercentage: string;
 };
 
 export type FormInputs = {
 	investedAmount: string;
 	buyPrice: string;
+	stopLossPrice: string;
 	targets: Target[];
 };
 
 const defaultValues: FormInputs = {
 	buyPrice: "",
 	investedAmount: "",
+	stopLossPrice: "",
 	targets: [
-		{ amount: "", sellingPercentage: "40" },
-		{ amount: "", sellingPercentage: "30" },
-		{ amount: "", sellingPercentage: "30" },
+		{ price: "", sellingPercentage: "40" },
+		{ price: "", sellingPercentage: "30" },
+		{ price: "", sellingPercentage: "30" },
 	],
 };
 
 const schema = yup.object().shape({
 	investedAmount: yup.string().required("Invested amount is required"),
 	buyPrice: yup.string().required("Buy price is required"),
+	stopLossPrice: yup.string().required("Stop-loss is required"),
 	targets: yup
 		.array()
 		.of(
 			yup.object().shape({
-				amount: yup.string().required("Target is required"),
+				price: yup.string().required("Target is required"),
 				sellingPercentage: yup.string().required("Selling percentage is required"),
 			})
 		)
@@ -50,11 +52,7 @@ const schema = yup.object().shape({
 
 export const CalculatorForm = () => {
 	const { isMobile } = useBreakpoint();
-
-	const [totalProfitInUSD, setTotalProfitInUSD] = useState<number>(0);
-	const [totalProfitPercentage, setTotalProfitPercentage] = useState<number>(0);
-	const [investmentAmount, setInvestmentAmount] = useState<number>(0);
-	const [totalExitAmount, setTotalExitAmount] = useState<number>(0);
+	const { state, onResultsUpdate, onResultsReset } = useInvestmentResults();
 
 	const {
 		control,
@@ -78,46 +76,17 @@ export const CalculatorForm = () => {
 
 	const onSubmit = (data: FormInputs) => {
 		try {
-			const {
-				investedAmount,
-				buyPrice,
-				target1,
-				target2,
-				target3,
-				sellingPercentageAtTarget1,
-				sellingPercentageAtTarget2,
-				sellingPercentageAtTarget3,
-			} = convertToNumbers({
-				investedAmount: data.investedAmount,
-				buyPrice: data.buyPrice,
-				target1: data.targets[0]?.amount,
-				target2: data.targets[1]?.amount,
-				target3: data.targets[2]?.amount,
-				sellingPercentageAtTarget1: data.targets[0]?.sellingPercentage,
-				sellingPercentageAtTarget2: data.targets[1]?.sellingPercentage,
-				sellingPercentageAtTarget3: data.targets[2]?.sellingPercentage,
+			onResultsUpdate({
+				investedAmount: toNumber(data.investedAmount),
+				buyPrice: toNumber(data.buyPrice),
+				stopLossPrice: toNumber(data.stopLossPrice),
+				targets: data.targets.map((t) => {
+					return {
+						price: toNumber(t.price),
+						sellingPercentage: toNumber(t.sellingPercentage),
+					};
+				}),
 			});
-
-			const percentagesSum = sellingPercentageAtTarget1 + sellingPercentageAtTarget2 + sellingPercentageAtTarget3;
-			const isPercentageSumValid = percentagesSum <= 100;
-
-			if (!isPercentageSumValid) return alert(`Percentages sum result is ${percentagesSum}% it should be equal or less than 100%`);
-
-			const profit = calculateTotalProfit(
-				investedAmount,
-				buyPrice,
-				target1,
-				target2,
-				target3,
-				sellingPercentageAtTarget1,
-				sellingPercentageAtTarget2,
-				sellingPercentageAtTarget3
-			);
-
-			setTotalProfitInUSD(profit);
-			setTotalProfitPercentage((profit / investedAmount) * 100);
-			setInvestmentAmount(investedAmount);
-			setTotalExitAmount(investedAmount + profit);
 
 			scrollToTop();
 		} catch (error) {
@@ -128,47 +97,73 @@ export const CalculatorForm = () => {
 
 	const onReset = () => {
 		reset(defaultValues);
-		setTotalProfitInUSD(0);
-		setTotalProfitPercentage(0);
-		setInvestmentAmount(0);
-		setTotalExitAmount(0);
+		onResultsReset();
 	};
 
 	const updateAmount = (index: number, newValue: string) => {
 		update(index, {
-			amount: newValue,
+			price: newValue,
 			sellingPercentage: getValues(`targets.${index}.sellingPercentage`),
 		});
 	};
 
 	const updateSellingPercentage = (index: number, newValue: string) => {
-		update(index, { amount: getValues(`targets.${index}.amount`), sellingPercentage: newValue });
+		update(index, { price: getValues(`targets.${index}.price`), sellingPercentage: newValue });
 	};
 
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col xs:gap-4 md:gap-8">
 			<Card className="dark:bg-gradient-to-r from-blue-900 to-red-900 dark:border-0">
 				<CardHeader className="font-bold">Investment Result</CardHeader>
 				<CardBody>
-					<div className="grid xs:grid-cols-1 md:grid-cols-4 xs:gap-3 md:gap-1">
-						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
-							<p className="text-sm">Profit/Loss</p>
+					<div className="grid xs:grid-cols-2 md:grid-cols-4 xs:gap-3 md:gap-1">
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">Profit/Loss</p>
 
-							<div className="flex gap-4">
+							<div className="flex gap-4 xs:text-sm md:text-md">
 								<ProfitLossResult
-									amount={totalProfitInUSD}
-									currencyCode="USD"
-									percentage={totalProfitPercentage}
-									isLoss={totalProfitInUSD < 0}
+									amount={state.profit.amount}
+									currencyCode={state.profit.currencyCode}
+									percentage={state.profit.percentage}
+									isLoss={state.profit.isLoss}
 								/>
 							</div>
 						</div>
 
-						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
-							<p className="text-sm">Total Exit Amount</p>
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">Total Exit Amount</p>
 
-							<div className="flex gap-4">
-								<ProfitLossResult amount={totalExitAmount} currencyCode="USD" isLoss={totalExitAmount < investmentAmount} />
+							<div className="flex gap-4 xs:text-sm md:text-md">
+								<ProfitLossResult
+									amount={state.profit.totalExitAmount}
+									currencyCode={state.profit.currencyCode}
+									isLoss={state.profit.isLoss}
+								/>
+							</div>
+						</div>
+
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">STOP-LOSS</p>
+
+							<div className="flex gap-4 xs:text-sm md:text-md">
+								<ProfitLossResult
+									amount={state.stopLoss.amount}
+									currencyCode={state.stopLoss.currencyCode}
+									percentage={state.stopLoss.percentage}
+									isLoss={state.stopLoss.isLoss}
+								/>
+							</div>
+						</div>
+
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">Total STOP-LOSS Amount</p>
+
+							<div className="flex gap-4 xs:text-sm md:text-md">
+								<ProfitLossResult
+									amount={state.stopLoss.totalExitAmount}
+									currencyCode={state.stopLoss.currencyCode}
+									isLoss={state.stopLoss.isLoss}
+								/>
 							</div>
 						</div>
 					</div>
@@ -176,57 +171,79 @@ export const CalculatorForm = () => {
 			</Card>
 
 			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col" noValidate>
-				<div className="grid xs:grid-cols-1 md:grid-cols-2 gap-unit-md">
-					<div className="flex gap-unit-md">
-						<Card className="flex-1">
-							<CardHeader className="font-bold">Investments</CardHeader>
-							<CardBody className="">
-								{/* Invested Amount Input */}
-								<Controller
-									name="investedAmount"
-									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PriceSymbolIcon />}
-											label={<CustomLabel onPaste={(val) => setValue("investedAmount", val)}>Investment</CustomLabel>}
-											type="number"
-											placeholder="0"
-											onClear={() => resetField("investedAmount")}
-											errorMessage={errors.investedAmount?.message}
-											isClearable
-										/>
-									)}
-								/>
-							</CardBody>
-						</Card>
-						<Card className="flex-1">
-							<CardHeader className="font-bold">Buy Price</CardHeader>
-							<CardBody className="">
-								{/* Buy Price Input */}
-								<Controller
-									name="buyPrice"
-									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PriceSymbolIcon />}
-											label={<CustomLabel onPaste={(val) => setValue("buyPrice", val)}>Buy Price</CustomLabel>}
-											type="number"
-											placeholder="0"
-											onClear={() => resetField("buyPrice")}
-											errorMessage={errors.buyPrice?.message}
-											isClearable
-										/>
-									)}
-								/>
-							</CardBody>
-						</Card>
-					</div>
+				<div className="grid xs:grid-cols-1 md:grid-cols-3 xs:gap-unit-xs md:gap-unit-md">
+					<Card>
+						<CardHeader className="font-bold">Investments</CardHeader>
+						<CardBody>
+							{/* Invested Amount Input */}
+							<Controller
+								name="investedAmount"
+								control={control}
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										onChange={onChange}
+										onBlur={onBlur}
+										value={value}
+										startContent={<PriceSymbolIcon />}
+										label={<CustomLabel onPaste={(val) => setValue("investedAmount", val)}>Investment</CustomLabel>}
+										type="number"
+										placeholder="0"
+										onClear={() => resetField("investedAmount")}
+										errorMessage={errors.investedAmount?.message}
+										isClearable
+									/>
+								)}
+							/>
+						</CardBody>
+					</Card>
+					<Card>
+						<CardHeader className="font-bold">Buy Price</CardHeader>
+						<CardBody>
+							{/* Buy Price Input */}
+							<Controller
+								name="buyPrice"
+								control={control}
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										onChange={onChange}
+										onBlur={onBlur}
+										value={value}
+										startContent={<PriceSymbolIcon />}
+										label={<CustomLabel onPaste={(val) => setValue("buyPrice", val)}>Buy Price</CustomLabel>}
+										type="number"
+										placeholder="0"
+										onClear={() => resetField("buyPrice")}
+										errorMessage={errors.buyPrice?.message}
+										isClearable
+									/>
+								)}
+							/>
+						</CardBody>
+					</Card>
+					<Card>
+						<CardHeader className="font-bold">STOP-LOSS Price</CardHeader>
+						<CardBody>
+							{/* Stop Loss Input */}
+							<Controller
+								name="stopLossPrice"
+								control={control}
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										onChange={onChange}
+										onBlur={onBlur}
+										value={value}
+										startContent={<PriceSymbolIcon />}
+										label={<CustomLabel onPaste={(val) => setValue("stopLossPrice", val)}>STOP-LOSS Price</CustomLabel>}
+										type="number"
+										placeholder="0"
+										onClear={() => resetField("stopLossPrice")}
+										errorMessage={errors.stopLossPrice?.message}
+										isClearable
+									/>
+								)}
+							/>
+						</CardBody>
+					</Card>
 
 					{targets.map((target, index) => (
 						<Card key={target.id}>
@@ -235,7 +252,7 @@ export const CalculatorForm = () => {
 								{/* Target Input */}
 								<Controller
 									control={control}
-									name={`targets.${index}.amount`}
+									name={`targets.${index}.price`}
 									render={({ field, fieldState: { error } }) => (
 										<Input
 											{...field}
@@ -276,7 +293,7 @@ export const CalculatorForm = () => {
 					))}
 				</div>
 
-				<div className="grid xs:grid-cols-2 md:grid-cols-6 gap-4 mt-8">
+				<div className="grid xs:grid-cols-2 md:grid-cols-6 xs:gap-unit-xs md:gap-unit-md xs:mt-unit-sm md:mt-unit-md">
 					<Button color="danger" variant="shadow" size="lg" className="md:col-start-5" onClick={onReset}>
 						Reset
 					</Button>
