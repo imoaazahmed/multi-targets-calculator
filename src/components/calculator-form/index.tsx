@@ -10,7 +10,7 @@ import { PercentageSymbolIcon } from "./components/percentage-symbol-icon";
 import { CustomLabel } from "./components/custom-label";
 import { SuggestedPercentages } from "./components/suggested-percentages";
 import { useInvestmentResults } from "./hooks/use-investment-results";
-import toNumber from "lodash/tonumber";
+import toNumber from "lodash/toNumber";
 
 export type Target = {
 	price: string;
