@@ -1,4 +1,4 @@
-import { Chip, ScrollShadow } from "../../theme/components";
+import { Chip, ScrollShadow } from "../../../theme/components";
 
 interface SuggestedPercentagesProps {
 	onSuggestedValueClick: (val: string) => void;

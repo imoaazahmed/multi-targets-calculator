@@ -1,17 +1,7 @@
 import { useCallback, useReducer } from "react";
 import { multiTargetsCalculator } from "../utils/multi-targets-calculator";
-
-type Target = {
-	price: number;
-	sellingPercentage: number;
-};
-
-type OnResultsUpdateData = {
-	investedAmount: number;
-	buyPrice: number;
-	stopLossPrice: number;
-	targets: Target[];
-};
+import { CalculatorInputs } from "../types";
+import { validatePercentage } from "../utils/validate-percentage";
 
 type Profit = {
 	amount: number;
@@ -64,29 +54,17 @@ const reducer = (state: ReducerState, action: ReducerAction) => {
 	}
 };
 
-type ValidatePercentageReturn = {
-	totalPercentages: number;
-	isValid: boolean;
-};
-
-const validatePercentage = (percentages: number[]): ValidatePercentageReturn => {
-	const totalPercentages = percentages.reduce((total, value) => total + value, 0);
-	const isValid = totalPercentages <= 100;
-	return { totalPercentages, isValid };
-};
-
 interface UseInvestmentResultsReturn {
 	state: ReducerState;
-	onResultsUpdate: (data: OnResultsUpdateData) => void;
+	onResultsUpdate: (data: CalculatorInputs) => void;
 	onResultsReset: () => void;
 }
 
 export const useInvestmentResults = (): UseInvestmentResultsReturn => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
-	const onResultsUpdate = useCallback((data: OnResultsUpdateData) => {
+	const onResultsUpdate = useCallback((data: CalculatorInputs) => {
 		const { investedAmount, buyPrice, stopLossPrice, targets } = data;
-
 		const { totalPercentages, isValid } = validatePercentage(targets?.map((t) => t?.sellingPercentage));
 
 		if (!isValid) return alert(`Total selling percentages is ${totalPercentages}%, it should be less than or equal to 100%`);

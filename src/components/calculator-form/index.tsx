@@ -5,15 +5,15 @@ import { Button, Card, CardBody, CardHeader, Input } from "../../theme/component
 import { useBreakpoint } from "../../theme/hooks";
 import { ProfitLossResult } from "../profit-loss-result";
 import { scrollToTop } from "../../utils/scroll-to-top";
-import { PriceSymbolIcon } from "./price-symbol-icon";
-import { PercentageSymbolIcon } from "./percentage-symbol-icon";
-import { CustomLabel } from "./custom-label";
-import { SuggestedPercentages } from "./suggested-percentages";
+import { PriceSymbolIcon } from "./components/price-symbol-icon";
+import { PercentageSymbolIcon } from "./components/percentage-symbol-icon";
+import { CustomLabel } from "./components/custom-label";
+import { SuggestedPercentages } from "./components/suggested-percentages";
 import { useInvestmentResults } from "./hooks/use-investment-results";
 import toNumber from "lodash/tonumber";
 
 export type Target = {
-	amount: string;
+	price: string;
 	sellingPercentage: string;
 };
 
@@ -29,9 +29,9 @@ const defaultValues: FormInputs = {
 	investedAmount: "",
 	stopLossPrice: "",
 	targets: [
-		{ amount: "", sellingPercentage: "40" },
-		{ amount: "", sellingPercentage: "30" },
-		{ amount: "", sellingPercentage: "30" },
+		{ price: "", sellingPercentage: "40" },
+		{ price: "", sellingPercentage: "30" },
+		{ price: "", sellingPercentage: "30" },
 	],
 };
 
@@ -43,7 +43,7 @@ const schema = yup.object().shape({
 		.array()
 		.of(
 			yup.object().shape({
-				amount: yup.string().required("Target is required"),
+				price: yup.string().required("Target is required"),
 				sellingPercentage: yup.string().required("Selling percentage is required"),
 			})
 		)
@@ -80,20 +80,12 @@ export const CalculatorForm = () => {
 				investedAmount: toNumber(data.investedAmount),
 				buyPrice: toNumber(data.buyPrice),
 				stopLossPrice: toNumber(data.stopLossPrice),
-				targets: [
-					{
-						price: toNumber(data.targets[0]?.amount),
-						sellingPercentage: toNumber(data.targets[0]?.sellingPercentage),
-					},
-					{
-						price: toNumber(data.targets[1]?.amount),
-						sellingPercentage: toNumber(data.targets[1]?.sellingPercentage),
-					},
-					{
-						price: toNumber(data.targets[2]?.amount),
-						sellingPercentage: toNumber(data.targets[2]?.sellingPercentage),
-					},
-				],
+				targets: data.targets.map((t) => {
+					return {
+						price: toNumber(t.price),
+						sellingPercentage: toNumber(t.sellingPercentage),
+					};
+				}),
 			});
 
 			scrollToTop();
@@ -110,25 +102,25 @@ export const CalculatorForm = () => {
 
 	const updateAmount = (index: number, newValue: string) => {
 		update(index, {
-			amount: newValue,
+			price: newValue,
 			sellingPercentage: getValues(`targets.${index}.sellingPercentage`),
 		});
 	};
 
 	const updateSellingPercentage = (index: number, newValue: string) => {
-		update(index, { amount: getValues(`targets.${index}.amount`), sellingPercentage: newValue });
+		update(index, { price: getValues(`targets.${index}.price`), sellingPercentage: newValue });
 	};
 
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col xs:gap-4 md:gap-8">
 			<Card className="dark:bg-gradient-to-r from-blue-900 to-red-900 dark:border-0">
 				<CardHeader className="font-bold">Investment Result</CardHeader>
 				<CardBody>
-					<div className="grid xs:grid-cols-1 md:grid-cols-4 xs:gap-3 md:gap-1">
-						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
-							<p className="text-sm">Profit/Loss</p>
+					<div className="grid xs:grid-cols-2 md:grid-cols-4 xs:gap-3 md:gap-1">
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">Profit/Loss</p>
 
-							<div className="flex gap-4">
+							<div className="flex gap-4 xs:text-sm md:text-md">
 								<ProfitLossResult
 									amount={state.profit.amount}
 									currencyCode={state.profit.currencyCode}
@@ -138,10 +130,10 @@ export const CalculatorForm = () => {
 							</div>
 						</div>
 
-						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
-							<p className="text-sm">Total Exit Amount</p>
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">Total Exit Amount</p>
 
-							<div className="flex gap-4">
+							<div className="flex gap-4 xs:text-sm md:text-md">
 								<ProfitLossResult
 									amount={state.profit.totalExitAmount}
 									currencyCode={state.profit.currencyCode}
@@ -150,10 +142,10 @@ export const CalculatorForm = () => {
 							</div>
 						</div>
 
-						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
-							<p className="text-sm">STOP-LOSS</p>
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">STOP-LOSS</p>
 
-							<div className="flex gap-4">
+							<div className="flex gap-4 xs:text-sm md:text-md">
 								<ProfitLossResult
 									amount={state.stopLoss.amount}
 									currencyCode={state.stopLoss.currencyCode}
@@ -163,10 +155,10 @@ export const CalculatorForm = () => {
 							</div>
 						</div>
 
-						<div className="flex xs:flex-row md:flex-col xs:justify-between md:gap-2 xs:items-center md:items-start">
-							<p className="text-sm">Total STOP-LOSS Exit Amount</p>
+						<div className="flex flex-col gap-unit-xs items-start">
+							<p className="xs:text-xs md:text-sm">Total STOP-LOSS Amount</p>
 
-							<div className="flex gap-4">
+							<div className="flex gap-4 xs:text-sm md:text-md">
 								<ProfitLossResult
 									amount={state.stopLoss.totalExitAmount}
 									currencyCode={state.stopLoss.currencyCode}
@@ -179,133 +171,129 @@ export const CalculatorForm = () => {
 			</Card>
 
 			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col" noValidate>
-				<div className="grid grid-cols-1 gap-unit-md">
-					<div className="grid grid-cols-3 gap-unit-md">
-						<Card>
-							<CardHeader className="font-bold">Investments</CardHeader>
-							<CardBody>
-								{/* Invested Amount Input */}
-								<Controller
-									name="investedAmount"
-									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PriceSymbolIcon />}
-											label={<CustomLabel onPaste={(val) => setValue("investedAmount", val)}>Investment</CustomLabel>}
-											type="number"
-											placeholder="0"
-											onClear={() => resetField("investedAmount")}
-											errorMessage={errors.investedAmount?.message}
-											isClearable
-										/>
-									)}
-								/>
-							</CardBody>
-						</Card>
-						<Card>
-							<CardHeader className="font-bold">Buy Price</CardHeader>
-							<CardBody>
-								{/* Buy Price Input */}
-								<Controller
-									name="buyPrice"
-									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PriceSymbolIcon />}
-											label={<CustomLabel onPaste={(val) => setValue("buyPrice", val)}>Buy Price</CustomLabel>}
-											type="number"
-											placeholder="0"
-											onClear={() => resetField("buyPrice")}
-											errorMessage={errors.buyPrice?.message}
-											isClearable
-										/>
-									)}
-								/>
-							</CardBody>
-						</Card>
-						<Card>
-							<CardHeader className="font-bold">STOP-LOSS Price</CardHeader>
-							<CardBody>
-								{/* Stop Loss Input */}
-								<Controller
-									name="stopLossPrice"
-									control={control}
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											onChange={onChange}
-											onBlur={onBlur}
-											value={value}
-											startContent={<PriceSymbolIcon />}
-											label={<CustomLabel onPaste={(val) => setValue("stopLossPrice", val)}>STOP-LOSS Price</CustomLabel>}
-											type="number"
-											placeholder="0"
-											onClear={() => resetField("stopLossPrice")}
-											errorMessage={errors.stopLossPrice?.message}
-											isClearable
-										/>
-									)}
-								/>
-							</CardBody>
-						</Card>
-					</div>
+				<div className="grid xs:grid-cols-1 md:grid-cols-3 xs:gap-unit-xs md:gap-unit-md">
+					<Card>
+						<CardHeader className="font-bold">Investments</CardHeader>
+						<CardBody>
+							{/* Invested Amount Input */}
+							<Controller
+								name="investedAmount"
+								control={control}
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										onChange={onChange}
+										onBlur={onBlur}
+										value={value}
+										startContent={<PriceSymbolIcon />}
+										label={<CustomLabel onPaste={(val) => setValue("investedAmount", val)}>Investment</CustomLabel>}
+										type="number"
+										placeholder="0"
+										onClear={() => resetField("investedAmount")}
+										errorMessage={errors.investedAmount?.message}
+										isClearable
+									/>
+								)}
+							/>
+						</CardBody>
+					</Card>
+					<Card>
+						<CardHeader className="font-bold">Buy Price</CardHeader>
+						<CardBody>
+							{/* Buy Price Input */}
+							<Controller
+								name="buyPrice"
+								control={control}
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										onChange={onChange}
+										onBlur={onBlur}
+										value={value}
+										startContent={<PriceSymbolIcon />}
+										label={<CustomLabel onPaste={(val) => setValue("buyPrice", val)}>Buy Price</CustomLabel>}
+										type="number"
+										placeholder="0"
+										onClear={() => resetField("buyPrice")}
+										errorMessage={errors.buyPrice?.message}
+										isClearable
+									/>
+								)}
+							/>
+						</CardBody>
+					</Card>
+					<Card>
+						<CardHeader className="font-bold">STOP-LOSS Price</CardHeader>
+						<CardBody>
+							{/* Stop Loss Input */}
+							<Controller
+								name="stopLossPrice"
+								control={control}
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										onChange={onChange}
+										onBlur={onBlur}
+										value={value}
+										startContent={<PriceSymbolIcon />}
+										label={<CustomLabel onPaste={(val) => setValue("stopLossPrice", val)}>STOP-LOSS Price</CustomLabel>}
+										type="number"
+										placeholder="0"
+										onClear={() => resetField("stopLossPrice")}
+										errorMessage={errors.stopLossPrice?.message}
+										isClearable
+									/>
+								)}
+							/>
+						</CardBody>
+					</Card>
 
-					<div className="grid grid-cols-3 gap-unit-md">
-						{targets.map((target, index) => (
-							<Card key={target.id}>
-								<CardHeader className="font-bold">Target {index + 1}</CardHeader>
-								<CardBody className="grid grid-cols-2 gap-unit-md">
-									{/* Target Input */}
+					{targets.map((target, index) => (
+						<Card key={target.id}>
+							<CardHeader className="font-bold">Target {index + 1}</CardHeader>
+							<CardBody className="grid grid-cols-2 gap-unit-md">
+								{/* Target Input */}
+								<Controller
+									control={control}
+									name={`targets.${index}.price`}
+									render={({ field, fieldState: { error } }) => (
+										<Input
+											{...field}
+											startContent={<PriceSymbolIcon />}
+											label={<CustomLabel onPaste={(val) => updateAmount(index, val)}>Amount</CustomLabel>}
+											type="number"
+											placeholder="0"
+											onClear={() => updateAmount(index, "")}
+											errorMessage={error?.message}
+											isClearable
+										/>
+									)}
+								/>
+
+								{/* Selling Percentage Input */}
+								<div className="flex flex-col gap-2 items-start">
 									<Controller
+										name={`targets.${index}.sellingPercentage`}
 										control={control}
-										name={`targets.${index}.amount`}
 										render={({ field, fieldState: { error } }) => (
 											<Input
 												{...field}
-												startContent={<PriceSymbolIcon />}
-												label={<CustomLabel onPaste={(val) => updateAmount(index, val)}>Amount</CustomLabel>}
+												startContent={<PercentageSymbolIcon />}
+												label={<CustomLabel>{isMobile ? "Selling %" : "Selling % at this Target"}</CustomLabel>}
 												type="number"
 												placeholder="0"
-												onClear={() => updateAmount(index, "")}
+												onClear={() => updateSellingPercentage(index, "")}
 												errorMessage={error?.message}
 												isClearable
 											/>
 										)}
 									/>
 
-									{/* Selling Percentage Input */}
-									<div className="flex flex-col gap-2 items-start">
-										<Controller
-											name={`targets.${index}.sellingPercentage`}
-											control={control}
-											render={({ field, fieldState: { error } }) => (
-												<Input
-													{...field}
-													startContent={<PercentageSymbolIcon />}
-													label={<CustomLabel>{isMobile ? "Selling %" : "Selling % at this Target"}</CustomLabel>}
-													type="number"
-													placeholder="0"
-													onClear={() => updateSellingPercentage(index, "")}
-													errorMessage={error?.message}
-													isClearable
-												/>
-											)}
-										/>
-
-										<SuggestedPercentages onSuggestedValueClick={(val) => updateSellingPercentage(index, val)} />
-									</div>
-								</CardBody>
-							</Card>
-						))}
-					</div>
+									<SuggestedPercentages onSuggestedValueClick={(val) => updateSellingPercentage(index, val)} />
+								</div>
+							</CardBody>
+						</Card>
+					))}
 				</div>
 
-				<div className="grid xs:grid-cols-2 md:grid-cols-6 gap-4 mt-8">
+				<div className="grid xs:grid-cols-2 md:grid-cols-6 xs:gap-unit-xs md:gap-unit-md xs:mt-unit-sm md:mt-unit-md">
 					<Button color="danger" variant="shadow" size="lg" className="md:col-start-5" onClick={onReset}>
 						Reset
 					</Button>

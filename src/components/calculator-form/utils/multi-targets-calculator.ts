@@ -1,9 +1,6 @@
-interface MultiTargetsCalculatorInputs {
-	investedAmount: number;
-	buyPrice: number;
-	stopLossPrice: number;
-	targets: { price: number; sellingPercentage: number }[];
-}
+import { CalculatorInputs } from "../types";
+
+interface MultiTargetsCalculatorInputs extends CalculatorInputs {}
 
 interface MultiTargetsCalculatorOutput {
 	numberOfCoins: number;

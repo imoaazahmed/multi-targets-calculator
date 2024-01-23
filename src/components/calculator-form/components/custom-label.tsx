@@ -1,4 +1,4 @@
-import { useClipboard } from "../../hooks/use-clipboard";
+import { useClipboard } from "../../../hooks/use-clipboard";
 
 interface CustomLabelProps {
 	children: React.ReactNode;
