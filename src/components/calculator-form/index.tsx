@@ -11,7 +11,6 @@ import { useInvestmentResults } from "@/components/calculator-form/hooks/use-inv
 import toNumber from "lodash/toNumber";
 import { useBreakpoint } from "@/theme/hooks";
 import { PriceSymbolIcon } from "@/components/calculator-form/components/price-symbol-icon";
-import { ButtonGroup } from "@nextui-org/react";
 import { TargetsButtonGroup } from "./components/targets-button-group";
 
 export type Target = {
