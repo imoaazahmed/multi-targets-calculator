@@ -18,7 +18,7 @@ function App() {
 				</NavbarContent>
 			</Navbar>
 
-			<div className="container mx-auto flex-1 grid grid-cols-1 my-8">
+			<div className="container mx-auto flex-1 grid grid-cols-1  my-4">
 				<CalculatorForm />
 
 				<div className="flex gap-unit-xs items-center justify-center mt-8 self-end">

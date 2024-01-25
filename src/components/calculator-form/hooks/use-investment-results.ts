@@ -39,7 +39,7 @@ const initialState: ReducerState = {
 		totalExitAmount: 0,
 		percentage: 0,
 		currencyCode: "USD",
-		isLoss: false,
+		isLoss: true,
 	},
 };
 
@@ -91,7 +91,7 @@ export const useInvestmentResults = (): UseInvestmentResultsReturn => {
 					totalExitAmount: totalStopLossRevenue,
 					percentage: stopLossPercentage,
 					currencyCode: "USD",
-					isLoss: stopLoss !== 0 || totalStopLossRevenue !== 0,
+					isLoss: true,
 				},
 			},
 		});
