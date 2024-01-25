@@ -1,4 +1,4 @@
-import { CalculatorInputs } from "../types";
+import { CalculatorInputs } from "@/components/calculator-form/types";
 
 interface MultiTargetsCalculatorInputs extends CalculatorInputs {}
 

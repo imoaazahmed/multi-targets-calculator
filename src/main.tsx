@@ -1,8 +1,8 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
-import "./main.css";
-import { Providers } from "./providers.tsx";
+import App from "@/App.tsx";
+import "@/main.css";
+import { Providers } from "@/providers.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 

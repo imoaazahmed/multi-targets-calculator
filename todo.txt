@@ -1,0 +1,4 @@
+- Export ButtonGroup from theme
+- Isolate results card into separate components
+- Add redux toolkit
+- Move the results logic into redux

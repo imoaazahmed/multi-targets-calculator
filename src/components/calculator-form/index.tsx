@@ -1,16 +1,17 @@
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Card, CardBody, CardHeader, Input } from "../../theme/components";
-import { useBreakpoint } from "../../theme/hooks";
-import { ProfitLossResult } from "../profit-loss-result";
-import { scrollToTop } from "../../utils/scroll-to-top";
-import { PriceSymbolIcon } from "./components/price-symbol-icon";
-import { PercentageSymbolIcon } from "./components/percentage-symbol-icon";
-import { CustomLabel } from "./components/custom-label";
-import { SuggestedPercentages } from "./components/suggested-percentages";
-import { useInvestmentResults } from "./hooks/use-investment-results";
+import { Button, Card, CardBody, CardHeader, Input } from "@/theme/components";
+import { ProfitLossResult } from "@/components/profit-loss-result";
+import { scrollToTop } from "@/utils/scroll-to-top";
+import { PercentageSymbolIcon } from "@/components/calculator-form/components/percentage-symbol-icon";
+import { CustomLabel } from "@/components/calculator-form/components/custom-label";
+import { SuggestedPercentages } from "@/components/calculator-form/components/suggested-percentages";
+import { useInvestmentResults } from "@/components/calculator-form/hooks/use-investment-results";
 import toNumber from "lodash/toNumber";
+import { useBreakpoint } from "@/theme/hooks";
+import { PriceSymbolIcon } from "@/components/calculator-form/components/price-symbol-icon";
+import { TargetsButtonGroup } from "./components/targets-button-group";
 
 export type Target = {
 	price: string;
@@ -112,7 +113,7 @@ export const CalculatorForm = () => {
 	};
 
 	return (
-		<div className="flex flex-col xs:gap-4 md:gap-8">
+		<div className="flex flex-col xs:gap-unit-md md:gap-unit-xl">
 			<Card className="dark:bg-gradient-to-r from-blue-900 to-red-900 dark:border-0">
 				<CardHeader className="font-bold">Investment Result</CardHeader>
 				<CardBody>
@@ -170,7 +171,7 @@ export const CalculatorForm = () => {
 				</CardBody>
 			</Card>
 
-			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col" noValidate>
+			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col xs:gap-unit-lg md:gap-unit-xl" noValidate>
 				<div className="grid xs:grid-cols-1 md:grid-cols-3 xs:gap-unit-xs md:gap-unit-md">
 					<Card>
 						<CardHeader className="font-bold">Investments</CardHeader>
@@ -244,53 +245,61 @@ export const CalculatorForm = () => {
 							/>
 						</CardBody>
 					</Card>
+				</div>
 
-					{targets.map((target, index) => (
-						<Card key={target.id}>
-							<CardHeader className="font-bold">Target {index + 1}</CardHeader>
-							<CardBody className="grid grid-cols-2 gap-unit-md">
-								{/* Target Input */}
-								<Controller
-									control={control}
-									name={`targets.${index}.price`}
-									render={({ field, fieldState: { error } }) => (
-										<Input
-											{...field}
-											startContent={<PriceSymbolIcon />}
-											label={<CustomLabel onPaste={(val) => updateAmount(index, val)}>Amount</CustomLabel>}
-											type="number"
-											placeholder="0"
-											onClear={() => updateAmount(index, "")}
-											errorMessage={error?.message}
-											isClearable
-										/>
-									)}
-								/>
+				<div className="flex flex-col gap-unit-md">
+					<div>
+						<TargetsButtonGroup setValue={setValue} />
+					</div>
 
-								{/* Selling Percentage Input */}
-								<div className="flex flex-col gap-2 items-start">
+					<div className="grid xs:grid-cols-1 md:grid-cols-3 xs:gap-unit-xs md:gap-unit-md">
+						{targets.map((target, index) => (
+							<Card key={target.id}>
+								<CardHeader className="font-bold">Target {index + 1}</CardHeader>
+								<CardBody className="grid grid-cols-2 gap-unit-md">
+									{/* Target Input */}
 									<Controller
-										name={`targets.${index}.sellingPercentage`}
 										control={control}
+										name={`targets.${index}.price`}
 										render={({ field, fieldState: { error } }) => (
 											<Input
 												{...field}
-												startContent={<PercentageSymbolIcon />}
-												label={<CustomLabel>{isMobile ? "Selling %" : "Selling % at this Target"}</CustomLabel>}
+												startContent={<PriceSymbolIcon />}
+												label={<CustomLabel onPaste={(val) => updateAmount(index, val)}>Amount</CustomLabel>}
 												type="number"
 												placeholder="0"
-												onClear={() => updateSellingPercentage(index, "")}
+												onClear={() => updateAmount(index, "")}
 												errorMessage={error?.message}
 												isClearable
 											/>
 										)}
 									/>
 
-									<SuggestedPercentages onSuggestedValueClick={(val) => updateSellingPercentage(index, val)} />
-								</div>
-							</CardBody>
-						</Card>
-					))}
+									{/* Selling Percentage Input */}
+									<div className="flex flex-col gap-2 items-start">
+										<Controller
+											name={`targets.${index}.sellingPercentage`}
+											control={control}
+											render={({ field, fieldState: { error } }) => (
+												<Input
+													{...field}
+													startContent={<PercentageSymbolIcon />}
+													label={<CustomLabel>{isMobile ? "Selling %" : "Selling % at this Target"}</CustomLabel>}
+													type="number"
+													placeholder="0"
+													onClear={() => updateSellingPercentage(index, "")}
+													errorMessage={error?.message}
+													isClearable
+												/>
+											)}
+										/>
+
+										<SuggestedPercentages onSuggestedValueClick={(val) => updateSellingPercentage(index, val)} />
+									</div>
+								</CardBody>
+							</Card>
+						))}
+					</div>
 				</div>
 
 				<div className="grid xs:grid-cols-2 md:grid-cols-6 xs:gap-unit-xs md:gap-unit-md xs:mt-unit-sm md:mt-unit-md">

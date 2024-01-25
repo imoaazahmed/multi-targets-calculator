@@ -1,7 +1,7 @@
 import { useCallback, useReducer } from "react";
-import { multiTargetsCalculator } from "../utils/multi-targets-calculator";
-import { CalculatorInputs } from "../types";
-import { validatePercentage } from "../utils/validate-percentage";
+import { multiTargetsCalculator } from "@/components/calculator-form/utils/multi-targets-calculator";
+import { CalculatorInputs } from "@/components/calculator-form/types";
+import { validatePercentage } from "@/components/calculator-form/utils/validate-percentage";
 
 type Profit = {
 	amount: number;
@@ -39,7 +39,7 @@ const initialState: ReducerState = {
 		totalExitAmount: 0,
 		percentage: 0,
 		currencyCode: "USD",
-		isLoss: false,
+		isLoss: true,
 	},
 };
 
@@ -91,7 +91,7 @@ export const useInvestmentResults = (): UseInvestmentResultsReturn => {
 					totalExitAmount: totalStopLossRevenue,
 					percentage: stopLossPercentage,
 					currencyCode: "USD",
-					isLoss: stopLoss !== 0 || totalStopLossRevenue !== 0,
+					isLoss: true,
 				},
 			},
 		});
