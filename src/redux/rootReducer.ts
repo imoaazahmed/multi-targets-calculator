@@ -1,7 +1,8 @@
 import { combineReducers } from "@reduxjs/toolkit";
-
-import targetsCalculator from "@/redux/targets-calculator/reducer";
+import investmentResults from "@/redux/investment-results/reducer";
+import smartAnalyzer from "@/redux/smart-analyzer/reducer";
 
 export default combineReducers({
-	targetsCalculator,
+	investmentResults,
+	smartAnalyzer,
 });

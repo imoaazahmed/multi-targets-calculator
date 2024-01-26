@@ -17,14 +17,14 @@ type StopLoss = {
 };
 
 type SliceState = {
-	investmentResults: {
+	data: {
 		profit: Profit;
 		stopLoss: StopLoss;
 	};
 };
 
 const initialState: SliceState = {
-	investmentResults: {
+	data: {
 		profit: {
 			amount: 0,
 			totalExitAmount: 0,
@@ -42,18 +42,18 @@ const initialState: SliceState = {
 	},
 };
 
-const targetsCalculatorSlice = createSlice({
-	name: "targetsCalculator",
+const investmentResultsSlice = createSlice({
+	name: "investmentResults",
 	initialState,
 	reducers: {
-		updateInvestmentResults(state, action: PayloadAction<SliceState["investmentResults"]>) {
-			state.investmentResults = action.payload;
+		updateInvestmentResults(state, action: PayloadAction<SliceState["data"]>) {
+			state.data = action.payload;
 		},
 		resetInvestmentResults(state) {
-			state.investmentResults = { ...initialState.investmentResults };
+			state.data = initialState.data;
 		},
 	},
 });
 
-export const { updateInvestmentResults, resetInvestmentResults } = targetsCalculatorSlice.actions;
-export default targetsCalculatorSlice.reducer;
+export const { updateInvestmentResults, resetInvestmentResults } = investmentResultsSlice.actions;
+export default investmentResultsSlice.reducer;

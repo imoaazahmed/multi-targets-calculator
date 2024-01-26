@@ -3,8 +3,8 @@ import { useAppSelector } from "@/redux/hooks";
 import { Card, CardBody, CardHeader } from "@/theme/components";
 
 export const InvestmentResults = () => {
-	const { investmentResults } = useAppSelector((state) => state.targetsCalculator);
-	const { profit, stopLoss } = investmentResults;
+	const { data } = useAppSelector((state) => state.investmentResults);
+	const { profit, stopLoss } = data;
 
 	return (
 		<Card className="dark:bg-gradient-to-r from-blue-900 to-red-900 dark:border-0">

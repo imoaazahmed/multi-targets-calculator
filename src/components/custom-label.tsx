@@ -3,14 +3,15 @@ import { useClipboard } from "@/hooks/use-clipboard";
 interface CustomLabelProps {
 	children: React.ReactNode;
 	onPaste?: (clipboardValue: string) => void;
+	pastedValueType?: "number" | "string";
 }
 
-export const CustomLabel = ({ children, onPaste }: CustomLabelProps) => {
+export const CustomLabel = ({ children, onPaste, pastedValueType }: CustomLabelProps) => {
 	const { onPaste: _onPaste } = useClipboard();
 
 	const onPasteBtnClick = () => {
 		_onPaste().then((val) => {
-			if (isNaN(Number(val))) {
+			if (pastedValueType === "number" && isNaN(Number(val))) {
 				alert(`Clipboard value is not a number.`);
 			}
 
