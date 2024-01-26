@@ -2,7 +2,6 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, CardBody, CardHeader, Input } from "@/theme/components";
-import { ProfitLossResult } from "@/components/profit-loss-result";
 import { scrollToTop } from "@/utils/scroll-to-top";
 import { PercentageSymbolIcon } from "@/components/calculator-form/components/percentage-symbol-icon";
 import { CustomLabel } from "@/components/calculator-form/components/custom-label";
@@ -12,6 +11,7 @@ import toNumber from "lodash/toNumber";
 import { useBreakpoint } from "@/theme/hooks";
 import { PriceSymbolIcon } from "@/components/calculator-form/components/price-symbol-icon";
 import { TargetsButtonGroup } from "./components/targets-button-group";
+import { InvestmentResults } from "@/components/calculator-form/components/investment-results";
 
 export type Target = {
 	price: string;
@@ -53,7 +53,7 @@ const schema = yup.object().shape({
 
 export const CalculatorForm = () => {
 	const { isMobile } = useBreakpoint();
-	const { state, onResultsUpdate, onResultsReset } = useInvestmentResults();
+	const { onResultsUpdate, onResultsReset } = useInvestmentResults();
 
 	const {
 		control,
@@ -114,62 +114,7 @@ export const CalculatorForm = () => {
 
 	return (
 		<div className="flex flex-col xs:gap-unit-md md:gap-unit-xl">
-			<Card className="dark:bg-gradient-to-r from-blue-900 to-red-900 dark:border-0">
-				<CardHeader className="font-bold">Investment Result</CardHeader>
-				<CardBody>
-					<div className="grid xs:grid-cols-2 md:grid-cols-4 xs:gap-3 md:gap-1">
-						<div className="flex flex-col gap-unit-xs items-start">
-							<p className="xs:text-xs md:text-sm">Profit/Loss</p>
-
-							<div className="flex gap-4 xs:text-sm md:text-md">
-								<ProfitLossResult
-									amount={state.profit.amount}
-									currencyCode={state.profit.currencyCode}
-									percentage={state.profit.percentage}
-									isLoss={state.profit.isLoss}
-								/>
-							</div>
-						</div>
-
-						<div className="flex flex-col gap-unit-xs items-start">
-							<p className="xs:text-xs md:text-sm">Total Exit Amount</p>
-
-							<div className="flex gap-4 xs:text-sm md:text-md">
-								<ProfitLossResult
-									amount={state.profit.totalExitAmount}
-									currencyCode={state.profit.currencyCode}
-									isLoss={state.profit.isLoss}
-								/>
-							</div>
-						</div>
-
-						<div className="flex flex-col gap-unit-xs items-start">
-							<p className="xs:text-xs md:text-sm">STOP-LOSS</p>
-
-							<div className="flex gap-4 xs:text-sm md:text-md">
-								<ProfitLossResult
-									amount={state.stopLoss.amount}
-									currencyCode={state.stopLoss.currencyCode}
-									percentage={state.stopLoss.percentage}
-									isLoss={state.stopLoss.isLoss}
-								/>
-							</div>
-						</div>
-
-						<div className="flex flex-col gap-unit-xs items-start">
-							<p className="xs:text-xs md:text-sm">Total STOP-LOSS Amount</p>
-
-							<div className="flex gap-4 xs:text-sm md:text-md">
-								<ProfitLossResult
-									amount={state.stopLoss.totalExitAmount}
-									currencyCode={state.stopLoss.currencyCode}
-									isLoss={state.stopLoss.isLoss}
-								/>
-							</div>
-						</div>
-					</div>
-				</CardBody>
-			</Card>
+			<InvestmentResults />
 
 			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col xs:gap-unit-lg md:gap-unit-xl" noValidate>
 				<div className="grid xs:grid-cols-1 md:grid-cols-3 xs:gap-unit-xs md:gap-unit-md">
@@ -249,7 +194,7 @@ export const CalculatorForm = () => {
 
 				<div className="flex flex-col gap-unit-md">
 					<div>
-						<TargetsButtonGroup setValue={setValue} />
+						<TargetsButtonGroup setValue={setValue} currentTargetsLength={getValues("targets").length} />
 					</div>
 
 					<div className="grid xs:grid-cols-1 md:grid-cols-3 xs:gap-unit-xs md:gap-unit-md">

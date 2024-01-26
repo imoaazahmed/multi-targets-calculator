@@ -3,19 +3,17 @@ import { createArray } from "@/utils/create-array";
 import { ButtonGroup, ButtonGroupProps } from "@nextui-org/react";
 import { UseFormSetValue } from "react-hook-form";
 import { FormInputs } from "@/components/calculator-form";
-import { useState } from "react";
 import { useBreakpoint } from "@/theme/hooks";
 
 interface TargetsButtonGroupProps extends ButtonGroupProps {
 	setValue: UseFormSetValue<FormInputs>;
+	currentTargetsLength: number;
 }
 
-export const TargetsButtonGroup = ({ setValue, ...rest }: TargetsButtonGroupProps) => {
-	const [currentTargetsLength, setCurrentTargetsLength] = useState(3);
+export const TargetsButtonGroup = ({ setValue, currentTargetsLength, ...rest }: TargetsButtonGroupProps) => {
 	const { isMobile } = useBreakpoint();
 
 	const onClick = (targetsLength: number) => {
-		setCurrentTargetsLength(targetsLength);
 		setValue(
 			"targets",
 			createArray(targetsLength).map(() => {
