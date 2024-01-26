@@ -17,24 +17,28 @@ type StopLoss = {
 };
 
 type SliceState = {
-	profit: Profit;
-	stopLoss: StopLoss;
+	data: {
+		profit: Profit;
+		stopLoss: StopLoss;
+	};
 };
 
 const initialState: SliceState = {
-	profit: {
-		amount: 0,
-		totalExitAmount: 0,
-		percentage: 0,
-		currencyCode: "USD",
-		isLoss: false,
-	},
-	stopLoss: {
-		amount: 0,
-		totalExitAmount: 0,
-		percentage: 0,
-		currencyCode: "USD",
-		isLoss: true,
+	data: {
+		profit: {
+			amount: 0,
+			totalExitAmount: 0,
+			percentage: 0,
+			currencyCode: "USD",
+			isLoss: false,
+		},
+		stopLoss: {
+			amount: 0,
+			totalExitAmount: 0,
+			percentage: 0,
+			currencyCode: "USD",
+			isLoss: true,
+		},
 	},
 };
 
@@ -42,11 +46,11 @@ const investmentResultsSlice = createSlice({
 	name: "investmentResults",
 	initialState,
 	reducers: {
-		updateInvestmentResults(state, action: PayloadAction<SliceState>) {
-			state = action.payload;
+		updateInvestmentResults(state, action: PayloadAction<SliceState["data"]>) {
+			state.data = action.payload;
 		},
 		resetInvestmentResults(state) {
-			state = { ...initialState };
+			state.data = initialState.data;
 		},
 	},
 });

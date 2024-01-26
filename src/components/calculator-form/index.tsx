@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, CardBody, CardHeader, Input } from "@/theme/components";
 import { scrollToTop } from "@/utils/scroll-to-top";
 import { PercentageSymbolIcon } from "@/components/calculator-form/components/percentage-symbol-icon";
-import { CustomLabel } from "@/components/calculator-form/components/custom-label";
+import { CustomLabel } from "@/components/custom-label";
 import { SuggestedPercentages } from "@/components/calculator-form/components/suggested-percentages";
 import { useInvestmentResults } from "@/components/calculator-form/hooks/use-investment-results";
 import toNumber from "lodash/toNumber";
@@ -12,6 +12,8 @@ import { useBreakpoint } from "@/theme/hooks";
 import { PriceSymbolIcon } from "@/components/calculator-form/components/price-symbol-icon";
 import { TargetsButtonGroup } from "./components/targets-button-group";
 import { InvestmentResults } from "@/components/calculator-form/components/investment-results";
+import { useEffect } from "react";
+import { useAppSelector } from "@/redux/hooks";
 
 export type Target = {
 	price: string;
@@ -54,6 +56,7 @@ const schema = yup.object().shape({
 export const CalculatorForm = () => {
 	const { isMobile } = useBreakpoint();
 	const { onResultsUpdate, onResultsReset } = useInvestmentResults();
+	const smartAnalyzer = useAppSelector((state) => state.smartAnalyzer);
 
 	const {
 		control,
@@ -74,6 +77,19 @@ export const CalculatorForm = () => {
 		control,
 		name: "targets",
 	});
+
+	useEffect(() => {
+		if (smartAnalyzer.data.input) {
+			reset({
+				investedAmount: getValues("investedAmount"),
+				buyPrice: smartAnalyzer.data.output.buyPrice[0],
+				stopLossPrice: smartAnalyzer.data.output.stopLoss,
+				targets: smartAnalyzer.data.output.targets.map((i) => {
+					return { price: i, sellingPercentage: (100 / smartAnalyzer.data.output.targets.length).toFixed().toString() };
+				}),
+			});
+		}
+	}, [smartAnalyzer]);
 
 	const onSubmit = (data: FormInputs) => {
 		try {
@@ -131,7 +147,11 @@ export const CalculatorForm = () => {
 										onBlur={onBlur}
 										value={value}
 										startContent={<PriceSymbolIcon />}
-										label={<CustomLabel onPaste={(val) => setValue("investedAmount", val)}>Investment</CustomLabel>}
+										label={
+											<CustomLabel pastedValueType="number" onPaste={(val) => setValue("investedAmount", val)}>
+												Investment
+											</CustomLabel>
+										}
 										type="number"
 										placeholder="0"
 										onClear={() => resetField("investedAmount")}
@@ -155,7 +175,11 @@ export const CalculatorForm = () => {
 										onBlur={onBlur}
 										value={value}
 										startContent={<PriceSymbolIcon />}
-										label={<CustomLabel onPaste={(val) => setValue("buyPrice", val)}>Buy Price</CustomLabel>}
+										label={
+											<CustomLabel pastedValueType="number" onPaste={(val) => setValue("buyPrice", val)}>
+												Buy Price
+											</CustomLabel>
+										}
 										type="number"
 										placeholder="0"
 										onClear={() => resetField("buyPrice")}
@@ -179,7 +203,11 @@ export const CalculatorForm = () => {
 										onBlur={onBlur}
 										value={value}
 										startContent={<PriceSymbolIcon />}
-										label={<CustomLabel onPaste={(val) => setValue("stopLossPrice", val)}>STOP-LOSS Price</CustomLabel>}
+										label={
+											<CustomLabel pastedValueType="number" onPaste={(val) => setValue("stopLossPrice", val)}>
+												STOP-LOSS Price
+											</CustomLabel>
+										}
 										type="number"
 										placeholder="0"
 										onClear={() => resetField("stopLossPrice")}
@@ -210,7 +238,11 @@ export const CalculatorForm = () => {
 											<Input
 												{...field}
 												startContent={<PriceSymbolIcon />}
-												label={<CustomLabel onPaste={(val) => updateAmount(index, val)}>Amount</CustomLabel>}
+												label={
+													<CustomLabel pastedValueType="number" onPaste={(val) => updateAmount(index, val)}>
+														Amount
+													</CustomLabel>
+												}
 												type="number"
 												placeholder="0"
 												onClear={() => updateAmount(index, "")}
@@ -248,11 +280,11 @@ export const CalculatorForm = () => {
 				</div>
 
 				<div className="grid xs:grid-cols-2 md:grid-cols-6 xs:gap-unit-xs md:gap-unit-md xs:mt-unit-sm md:mt-unit-md">
-					<Button color="danger" variant="shadow" size="lg" className="md:col-start-5" onClick={onReset}>
+					<Button color="danger" size="lg" className="md:col-start-5" onClick={onReset}>
 						Reset
 					</Button>
 
-					<Button type="submit" variant="shadow" color="primary" size="lg">
+					<Button type="submit" color="primary" size="lg">
 						Submit
 					</Button>
 				</div>

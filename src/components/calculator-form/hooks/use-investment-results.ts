@@ -3,7 +3,7 @@ import { multiTargetsCalculator } from "@/components/calculator-form/utils/multi
 import { CalculatorInputs } from "@/components/calculator-form/types";
 import { validatePercentage } from "@/components/calculator-form/utils/validate-percentage";
 import { useAppDispatch } from "@/redux/hooks";
-import { resetInvestmentResults, updateInvestmentResults } from "@/redux/targets-calculator/reducer";
+import { resetInvestmentResults, updateInvestmentResults } from "@/redux/investment-results/reducer";
 
 interface UseInvestmentResultsReturn {
 	onResultsUpdate: (data: CalculatorInputs) => void;
