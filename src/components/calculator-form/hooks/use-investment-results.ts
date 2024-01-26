@@ -2,6 +2,8 @@ import { useCallback, useReducer } from "react";
 import { multiTargetsCalculator } from "@/components/calculator-form/utils/multi-targets-calculator";
 import { CalculatorInputs } from "@/components/calculator-form/types";
 import { validatePercentage } from "@/components/calculator-form/utils/validate-percentage";
+import { useAppDispatch } from "@/redux/hooks";
+import { resetInvestmentResults, updateInvestmentResults } from "@/redux/targets-calculator/reducer";
 
 type Profit = {
 	amount: number;
@@ -62,6 +64,7 @@ interface UseInvestmentResultsReturn {
 
 export const useInvestmentResults = (): UseInvestmentResultsReturn => {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const _dispatch = useAppDispatch();
 
 	const onResultsUpdate = useCallback((data: CalculatorInputs) => {
 		const { investedAmount, buyPrice, stopLossPrice, targets } = data;
@@ -76,28 +79,33 @@ export const useInvestmentResults = (): UseInvestmentResultsReturn => {
 			targets,
 		});
 
+		const payload = {
+			profit: {
+				amount: profit,
+				totalExitAmount: totalRevenue,
+				percentage: profitPercentage,
+				currencyCode: "USD",
+				isLoss: isLoss,
+			},
+			stopLoss: {
+				amount: stopLoss,
+				totalExitAmount: totalStopLossRevenue,
+				percentage: stopLossPercentage,
+				currencyCode: "USD",
+				isLoss: true,
+			},
+		};
+
+		_dispatch(updateInvestmentResults(payload));
+
 		dispatch({
 			type: "UPDATE",
-			payload: {
-				profit: {
-					amount: profit,
-					totalExitAmount: totalRevenue,
-					percentage: profitPercentage,
-					currencyCode: "USD",
-					isLoss: isLoss,
-				},
-				stopLoss: {
-					amount: stopLoss,
-					totalExitAmount: totalStopLossRevenue,
-					percentage: stopLossPercentage,
-					currencyCode: "USD",
-					isLoss: true,
-				},
-			},
+			payload,
 		});
 	}, []);
 
 	const onResultsReset = useCallback(() => {
+		_dispatch(resetInvestmentResults());
 		dispatch({ type: "RESET" });
 	}, []);
 
