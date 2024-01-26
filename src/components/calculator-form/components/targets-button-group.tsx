@@ -25,7 +25,7 @@ export const TargetsButtonGroup = ({ setValue, currentTargetsLength, ...rest }: 
 	return (
 		<ButtonGroup fullWidth={isMobile} {...rest}>
 			{[1, 2, 3].map((i) => (
-				<Button key={i} size="sm" color={currentTargetsLength === i ? "primary" : "default"} onClick={() => onClick(i)}>
+				<Button key={i} size="md" color={currentTargetsLength === i ? "primary" : "default"} onClick={() => onClick(i)}>
 					{i} Target{i > 1 ? "s" : ""}
 				</Button>
 			))}
