@@ -20,13 +20,21 @@ export const useInvestmentResults = (): UseInvestmentResultsReturn => {
     if (!isValid)
       return alert(`Total selling percentages is ${totalPercentages}%, it should be less than or equal to 100%`);
 
-    const { profit, profitPercentage, totalRevenue, isLoss, stopLoss, stopLossPercentage, totalStopLossRevenue } =
-      multiTargetsCalculator({
-        investedAmount,
-        buyPrice,
-        stopLossPrice,
-        targets,
-      });
+    const {
+      profit,
+      profitPercentage,
+      totalRevenue,
+      isLoss,
+      stopLoss,
+      stopLossPercentage,
+      totalStopLossRevenue,
+      targetDetails,
+    } = multiTargetsCalculator({
+      investedAmount,
+      buyPrice,
+      stopLossPrice,
+      targets,
+    });
 
     dispatch(
       updateInvestmentResults({
@@ -44,6 +52,7 @@ export const useInvestmentResults = (): UseInvestmentResultsReturn => {
           currencyCode: 'USD',
           isLoss: true,
         },
+        targetDetails,
       }),
     );
   }, []);

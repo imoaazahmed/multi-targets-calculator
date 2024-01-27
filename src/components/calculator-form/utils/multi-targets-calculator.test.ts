@@ -6,17 +6,17 @@ test('calculates correct values for standard input', () => {
     buyPrice: 2.973,
     stopLossPrice: 2.755,
     targets: [
-      { sellingPercentage: 33, price: 3.103 },
-      { sellingPercentage: 33, price: 3.251 },
-      { sellingPercentage: 33, price: 3.496 },
+      { sellingPercentage: 33.33, price: 3.103 },
+      { sellingPercentage: 33.33, price: 3.251 },
+      { sellingPercentage: 33.33, price: 3.496 },
     ],
   };
 
   const expectedOutput = {
     numberOfCoins: 168.18028927009755,
-    profit: 46.670030272452095,
-    profitPercentage: 9.33400605449042,
-    totalRevenue: 546.6700302724521,
+    profit: 52.18673057517654,
+    profitPercentage: 10.437346115035307,
+    totalRevenue: 552.1367305751766,
     isLoss: false,
     stopLoss: 36.663303060881276,
     stopLossPercentage: 7.332660612176254,
@@ -24,21 +24,21 @@ test('calculates correct values for standard input', () => {
     targetDetails: [
       {
         price: 3.103,
-        profit: 7.214934409687203,
-        revenue: 172.2149344096872,
-        sellingPercentage: 33,
+        profit: 7.28708375378406,
+        revenue: 173.93708375378407,
+        sellingPercentage: 33.33,
       },
       {
         price: 3.251,
-        profit: 15.42885973763876,
-        revenue: 180.42885973763876,
-        sellingPercentage: 33,
+        profit: 15.583148335015096,
+        revenue: 182.2331483350151,
+        sellingPercentage: 33.33,
       },
       {
         price: 3.496,
-        profit: 29.026236125126132,
-        revenue: 194.02623612512613,
-        sellingPercentage: 33,
+        profit: 29.316498486377384,
+        revenue: 195.9664984863774,
+        sellingPercentage: 33.33,
       },
     ],
   };
@@ -46,6 +46,27 @@ test('calculates correct values for standard input', () => {
   const output = multiTargetsCalculator(input);
 
   expect(output).toEqual(expectedOutput);
+});
+
+test('total profit equals the sum of all target profits', () => {
+  const input = {
+    investedAmount: 500,
+    buyPrice: 2.973,
+    stopLossPrice: 2.755,
+    targets: [
+      { sellingPercentage: 33.33, price: 3.103 },
+      { sellingPercentage: 33.33, price: 3.251 },
+      { sellingPercentage: 33.33, price: 3.496 },
+    ],
+  };
+
+  const output = multiTargetsCalculator(input);
+
+  // Calculate sum of individual target profits
+  const sumOfTargetProfits = output.targetDetails.reduce((acc, target) => acc + target.profit, 0);
+
+  // Check if the total profit is equal to the sum of individual target profits
+  expect(output.profit).toBeCloseTo(sumOfTargetProfits);
 });
 
 test('correctly identifies a loss scenario', () => {
@@ -73,7 +94,7 @@ test('handles case with no targets', () => {
   const output = multiTargetsCalculator(input);
 
   expect(output.totalRevenue).toBe(0);
-  expect(output.profit).toBe(-1000); // Since no revenue is generated
+  expect(output.profit).toBe(0);
 });
 
 test('handles zero invested amount', () => {

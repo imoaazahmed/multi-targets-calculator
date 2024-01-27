@@ -16,10 +16,18 @@ type StopLoss = {
   isLoss: boolean;
 };
 
+interface TargetDetails {
+  sellingPercentage: number;
+  price: number;
+  revenue: number;
+  profit: number;
+}
+
 type SliceState = {
   data: {
     profit: Profit;
     stopLoss: StopLoss;
+    targetDetails: TargetDetails[];
   };
 };
 
@@ -39,6 +47,7 @@ const initialState: SliceState = {
       currencyCode: 'USD',
       isLoss: true,
     },
+    targetDetails: [],
   },
 };
 
