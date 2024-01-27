@@ -33,6 +33,18 @@ test("handles negative percentages", () => {
 	expect(result.isValid).toBe(false);
 });
 
+test("rejects negative percentages", () => {
+	const percentages = [-10, 50, -60];
+	const result = validatePercentage(percentages);
+	expect(result.isValid).toBe(false);
+});
+
+test("accepts valid, non-negative percentages", () => {
+	const percentages = [20, 30, 50]; // Total 100% and all are non-negative
+	const result = validatePercentage(percentages);
+	expect(result.isValid).toBe(true);
+});
+
 test("identifies single value exceeding 100% as invalid", () => {
 	const percentages = [150]; // Single value exceeding 100%
 	const result = validatePercentage(percentages);
