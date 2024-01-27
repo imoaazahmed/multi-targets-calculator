@@ -1,18 +1,18 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 // Next UI
-import { NextUIProvider } from "@nextui-org/react";
+import { NextUIProvider } from '@nextui-org/react';
 
 // Redux
-import { Provider } from "react-redux";
-import store from "@/redux/store";
+import { Provider } from 'react-redux';
+import store from '@/redux/store';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	return (
-		<Provider store={store}>
-			<NextUIProvider navigate={navigate}>{children}</NextUIProvider>
-		</Provider>
-	);
+  return (
+    <Provider store={store}>
+      <NextUIProvider navigate={navigate}>{children}</NextUIProvider>
+    </Provider>
+  );
 }
