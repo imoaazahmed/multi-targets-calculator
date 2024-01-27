@@ -17,7 +17,7 @@ export const TargetsButtonGroup = ({ setValue, currentTargetsLength, ...rest }: 
     setValue(
       'targets',
       createArray(targetsLength).map(() => {
-        return { price: '', sellingPercentage: (100 / targetsLength).toFixed(0).toString() };
+        return { price: '', sellingPercentage: (100 / targetsLength).toFixed(2).toString() };
       }),
     );
   };

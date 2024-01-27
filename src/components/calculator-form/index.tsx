@@ -13,7 +13,9 @@ import { PriceSymbolIcon } from '@/components/calculator-form/components/price-s
 import { TargetsButtonGroup } from './components/targets-button-group';
 import { InvestmentResults } from '@/components/calculator-form/components/investment-results';
 import { useEffect } from 'react';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { ProfitLossResult } from '../profit-loss-result';
+import { resetSmartAnalyzer } from '@/redux/smart-analyzer/reducer';
 
 export type Target = {
   price: string;
@@ -32,9 +34,9 @@ const defaultValues: FormInputs = {
   investedAmount: '',
   stopLossPrice: '',
   targets: [
-    { price: '', sellingPercentage: '33' },
-    { price: '', sellingPercentage: '33' },
-    { price: '', sellingPercentage: '33' },
+    { price: '', sellingPercentage: '33.33' },
+    { price: '', sellingPercentage: '33.33' },
+    { price: '', sellingPercentage: '33.33' },
   ],
 };
 
@@ -56,7 +58,9 @@ const schema = yup.object().shape({
 export const CalculatorForm = () => {
   const { isMobile } = useBreakpoint();
   const { onResultsUpdate, onResultsReset } = useInvestmentResults();
+  const { targetDetails } = useAppSelector((state) => state.investmentResults.data);
   const smartAnalyzer = useAppSelector((state) => state.smartAnalyzer);
+  const dispatch = useAppDispatch();
 
   const {
     control,
@@ -85,7 +89,10 @@ export const CalculatorForm = () => {
         buyPrice: smartAnalyzer.data.output.buyPrice[0],
         stopLossPrice: smartAnalyzer.data.output.stopLoss,
         targets: smartAnalyzer.data.output.targets.map((i) => {
-          return { price: i, sellingPercentage: (100 / smartAnalyzer.data.output.targets.length).toFixed().toString() };
+          return {
+            price: i,
+            sellingPercentage: (100 / smartAnalyzer.data.output.targets.length).toFixed(2).toString(),
+          };
         }),
       });
     }
@@ -115,6 +122,7 @@ export const CalculatorForm = () => {
   const onReset = () => {
     reset(defaultValues);
     onResultsReset();
+    dispatch(resetSmartAnalyzer());
   };
 
   const updateAmount = (index: number, newValue: string) => {
@@ -228,7 +236,19 @@ export const CalculatorForm = () => {
           <div className='grid xs:grid-cols-1 md:grid-cols-3 xs:gap-unit-xs md:gap-unit-md'>
             {targets.map((target, index) => (
               <Card key={target.id}>
-                <CardHeader className='font-bold'>Target {index + 1}</CardHeader>
+                <CardHeader className='font-bold'>
+                  <div className='flex items-center justify-between w-full gap-unit-md'>
+                    Target {index + 1}
+                    {!!targetDetails.length && (
+                      <ProfitLossResult
+                        amount={targetDetails?.[index]?.profit}
+                        currencyCode={'USD'}
+                        className='text-sm'
+                        bgTransparent
+                      />
+                    )}
+                  </div>
+                </CardHeader>
                 <CardBody className='grid grid-cols-2 gap-unit-md'>
                   {/* Target Input */}
                   <Controller

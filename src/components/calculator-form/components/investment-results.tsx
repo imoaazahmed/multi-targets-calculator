@@ -1,14 +1,25 @@
 import { ProfitLossResult } from '@/components/profit-loss-result';
 import { useAppSelector } from '@/redux/hooks';
-import { Card, CardBody, CardHeader } from '@/theme/components';
+import { Card, CardBody, CardHeader, Chip } from '@/theme/components';
 
 export const InvestmentResults = () => {
+  const { coinName } = useAppSelector((state) => state.smartAnalyzer.data);
   const { data } = useAppSelector((state) => state.investmentResults);
   const { profit, stopLoss } = data;
 
   return (
     <Card className='dark:bg-gradient-to-r from-blue-900 to-red-900 dark:border-0'>
-      <CardHeader className='font-bold'>Investment Result</CardHeader>
+      <CardHeader className='font-bold'>
+        <div className='flex items-center gap-unit-xs'>
+          <p>Investment Result</p>
+
+          {!!coinName && (
+            <Chip color='success' variant='dot'>
+              {coinName}
+            </Chip>
+          )}
+        </div>
+      </CardHeader>
       <CardBody>
         <div className='grid xs:grid-cols-2 md:grid-cols-4 xs:gap-3 md:gap-1'>
           <div className='flex flex-col gap-unit-xs items-start'>

@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type SliceState = {
   data: {
+    coinName: string;
     input: string;
     output: {
       buyPrice: string[];
@@ -13,6 +14,7 @@ type SliceState = {
 
 const initialState: SliceState = {
   data: {
+    coinName: '',
     input: '',
     output: {
       buyPrice: [],
