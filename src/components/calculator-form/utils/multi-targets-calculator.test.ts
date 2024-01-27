@@ -21,6 +21,26 @@ test('calculates correct values for standard input', () => {
     stopLoss: 36.663303060881276,
     stopLossPercentage: 7.332660612176254,
     totalStopLossRevenue: 463.3366969391187,
+    targetDetails: [
+      {
+        price: 3.103,
+        profit: 7.214934409687203,
+        revenue: 172.2149344096872,
+        sellingPercentage: 33,
+      },
+      {
+        price: 3.251,
+        profit: 15.42885973763876,
+        revenue: 180.42885973763876,
+        sellingPercentage: 33,
+      },
+      {
+        price: 3.496,
+        profit: 29.026236125126132,
+        revenue: 194.02623612512613,
+        sellingPercentage: 33,
+      },
+    ],
   };
 
   const output = multiTargetsCalculator(input);

@@ -2,6 +2,13 @@ import { CalculatorInputs } from '@/components/calculator-form/types';
 
 interface MultiTargetsCalculatorInputs extends CalculatorInputs {}
 
+interface TargetDetails {
+  sellingPercentage: number;
+  price: number;
+  revenue: number;
+  profit: number;
+}
+
 interface MultiTargetsCalculatorOutput {
   numberOfCoins: number;
   profit: number;
@@ -11,6 +18,7 @@ interface MultiTargetsCalculatorOutput {
   stopLoss: number;
   stopLossPercentage: number;
   totalStopLossRevenue: number;
+  targetDetails: TargetDetails[];
 }
 
 export function multiTargetsCalculator({
@@ -22,6 +30,9 @@ export function multiTargetsCalculator({
   // Determine the number of coins purchased
   const numberOfCoins = investedAmount / buyPrice;
 
+  // Calculate the profit & total revenue for each target
+  const targetDetails = [];
+
   // Calculate revenue from selling coins at each target
   let totalRevenue = 0;
 
@@ -29,6 +40,16 @@ export function multiTargetsCalculator({
     const sellingAtTarget = target.sellingPercentage / 100;
     const revenue = numberOfCoins * sellingAtTarget * target.price;
     totalRevenue += revenue;
+
+    // Calculate profit for each target
+    const targetProfit = revenue - investedAmount * sellingAtTarget;
+
+    targetDetails.push({
+      sellingPercentage: target.sellingPercentage,
+      price: target.price,
+      revenue,
+      profit: targetProfit,
+    });
   }
 
   // Calculate profit
@@ -50,5 +71,6 @@ export function multiTargetsCalculator({
     stopLoss,
     stopLossPercentage,
     totalStopLossRevenue,
+    targetDetails,
   };
 }
