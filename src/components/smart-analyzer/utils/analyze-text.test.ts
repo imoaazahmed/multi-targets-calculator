@@ -29,16 +29,19 @@ test('parses correctly formatted input for multiple scenarios', () => {
   `;
 
   const result1 = analyzeText(text1);
+  expect(result1.coinName).toBe('FLUX-USDT');
   expect(result1.buyPrice).toEqual(['0.5936', '0.5958']);
   expect(result1.targets).toEqual(['0.6170', '0.6561', '0.7186']);
   expect(result1.stopLoss).toBe('0.5492');
 
   const result2 = analyzeText(text2);
+  expect(result2.coinName).toBe('ZEC-USDT');
   expect(result2.buyPrice).toEqual(['23.97', '24.15']);
   expect(result2.targets).toEqual(['25.10', '27.71', '29.33']);
   expect(result2.stopLoss).toBe('22.21');
 
   const result3 = analyzeText(text3);
+  expect(result3.coinName).toBe('RVN-USDT');
   expect(result3.buyPrice).toEqual(['0.02133', '0.02145']);
   expect(result3.targets).toEqual(['0.02226', '0.02371', '0.02772']);
   expect(result3.stopLoss).toBe('0.01989');

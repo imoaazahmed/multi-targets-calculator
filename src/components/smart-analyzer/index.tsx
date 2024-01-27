@@ -41,10 +41,11 @@ export const SmartAnalyzer = () => {
   });
 
   const onSubmit = (data: FormInputs) => {
-    const { targets, stopLoss, buyPrice } = analyzeText(data.recommendation);
+    const { coinName, targets, stopLoss, buyPrice } = analyzeText(data.recommendation);
 
     dispatch(
       updateSmartAnalyzer({
+        coinName: coinName,
         input: data.recommendation,
         output: {
           buyPrice,
