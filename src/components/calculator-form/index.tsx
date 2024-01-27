@@ -32,9 +32,9 @@ const defaultValues: FormInputs = {
   investedAmount: '',
   stopLossPrice: '',
   targets: [
-    { price: '', sellingPercentage: '33' },
-    { price: '', sellingPercentage: '33' },
-    { price: '', sellingPercentage: '33' },
+    { price: '', sellingPercentage: '33.33' },
+    { price: '', sellingPercentage: '33.33' },
+    { price: '', sellingPercentage: '33.33' },
   ],
 };
 
