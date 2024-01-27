@@ -16,7 +16,6 @@ export * from './kbd';
 export * from './link';
 export * from './listbox';
 export * from './modal';
-export * from './otp-input';
 export * from './pagination';
 export * from './popover';
 export * from './progress';

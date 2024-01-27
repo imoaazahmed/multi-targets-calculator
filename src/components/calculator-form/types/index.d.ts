@@ -1,11 +1,11 @@
 export type Target = {
-	price: number;
-	sellingPercentage: number;
+  price: number;
+  sellingPercentage: number;
 };
 
 export type CalculatorInputs = {
-	investedAmount: number;
-	buyPrice: number;
-	stopLossPrice: number;
-	targets: Target[];
+  investedAmount: number;
+  buyPrice: number;
+  stopLossPrice: number;
+  targets: Target[];
 };
