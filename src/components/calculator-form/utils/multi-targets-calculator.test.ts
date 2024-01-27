@@ -1,7 +1,7 @@
 import { multiTargetsCalculator } from './multi-targets-calculator';
 
 test('calculates correct values for standard input', () => {
-  const input = {
+  const input1 = {
     investedAmount: 500,
     buyPrice: 2.973,
     stopLossPrice: 2.755,
@@ -12,7 +12,7 @@ test('calculates correct values for standard input', () => {
     ],
   };
 
-  const expectedOutput = {
+  const expectedOutput1 = {
     numberOfCoins: 168.18028927009755,
     profit: 52.18673057517654,
     profitPercentage: 10.437346115035307,
@@ -43,9 +43,53 @@ test('calculates correct values for standard input', () => {
     ],
   };
 
-  const output = multiTargetsCalculator(input);
+  const input2 = {
+    investedAmount: 500,
+    buyPrice: 0.5936,
+    stopLossPrice: 0.5492,
+    targets: [
+      { sellingPercentage: 33.33, price: 0.617 },
+      { sellingPercentage: 33.33, price: 0.6561 },
+      { sellingPercentage: 33.33, price: 0.7186 },
+    ],
+  };
 
-  expect(output).toEqual(expectedOutput);
+  const expectedOutput2 = {
+    numberOfCoins: 842.3180592991913,
+    profit: 59.209038072776224,
+    profitPercentage: 11.841807614555243,
+    totalRevenue: 559.1590380727762,
+    isLoss: false,
+    stopLoss: 37.39892183288413,
+    stopLossPercentage: 7.479784366576824,
+    totalStopLossRevenue: 462.6010781671159,
+    targetDetails: [
+      {
+        price: 0.617,
+        profit: 6.569423854447422,
+        revenue: 173.21942385444743,
+        sellingPercentage: 33.33,
+      },
+      {
+        price: 0.6561,
+        profit: 17.546538072776258,
+        revenue: 184.19653807277626,
+        sellingPercentage: 33.33,
+      },
+      {
+        price: 0.7186,
+        profit: 35.093076145552544,
+        revenue: 201.74307614555255,
+        sellingPercentage: 33.33,
+      },
+    ],
+  };
+
+  const output1 = multiTargetsCalculator(input1);
+  expect(output1).toEqual(expectedOutput1);
+
+  const output2 = multiTargetsCalculator(input2);
+  expect(output2).toEqual(expectedOutput2);
 });
 
 test('total profit equals the sum of all target profits', () => {
