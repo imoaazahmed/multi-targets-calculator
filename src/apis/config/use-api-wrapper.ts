@@ -22,12 +22,12 @@ import {
 type QueryWrapperArgs<TQueryFnData, TError, TData, TQueryKey extends QueryKey> = [
   identifier: TQueryKey,
   apiFn: QueryFunction<TQueryFnData, TQueryKey>,
-  options?: Omit<UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>, 'queryKey' | 'queryFn'>,
 ];
 
 type MutationWrapperArgs<TData, TError, TVariables, TContext> = [
   mutationFn: MutationFunction<TData, TVariables>,
-  options?: Omit<UseMutationOptions<TData, TError, TVariables, TContext>, 'mutationFn'>
+  options?: Omit<UseMutationOptions<TData, TError, TVariables, TContext>, 'mutationFn'>,
 ];
 
 /**
@@ -37,7 +37,7 @@ export function useQueryWrapper<
   TQueryFnData = unknown,
   TError = unknown,
   TData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey
+  TQueryKey extends QueryKey = QueryKey,
 >(...args: QueryWrapperArgs<TQueryFnData, TError, TData, TQueryKey>): UseQueryResult<TData, TError> {
   const [identifier, apiFn, options = {}] = args;
   return useQuery<TQueryFnData, TError, TData, TQueryKey>(identifier, apiFn, {
