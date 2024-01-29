@@ -1,3 +1,13 @@
 - Export ButtonGroup from theme
 - Export Navbar from theme
+- Add in nav bar page for "day trading" and "Investing"
 - 
+- 
+- Add running deals section
+    - Add database
+    - Add list of all the running deals
+    - show profit and revenue and total loss on each row
+    - Allow edit/delete each row
+    - Allow show details also in modal
+    - All total of total profit and revenue and loss for all allocations
+    - 
